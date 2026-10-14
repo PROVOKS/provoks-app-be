@@ -1,32 +1,42 @@
 import type { Request, Response } from "express";
 
-import { studentService } from "../services/student.service";
+import { userService } from "../services/user.service";
 import { asyncHandler } from "../utils/async-handler";
 import { param } from "../utils/param";
 
-export const studentController = {
+export const userController = {
   list: asyncHandler(async (req: Request, res: Response) => {
-    const data = await studentService.list(req.validatedQuery ?? {});
+    const data = await userService.list(req.validatedQuery ?? {});
     res.json({ success: true, message: "OK", data });
   }),
 
+  update: asyncHandler(async (req: Request, res: Response) => {
+    const data = await userService.update(param(req, "id"), req.body);
+    res.json({ success: true, message: "User diperbarui", data });
+  }),
+
+  remove: asyncHandler(async (req: Request, res: Response) => {
+    const data = await userService.remove(param(req, "id"), req.user!.sub);
+    res.json({ success: true, message: "User dihapus", data });
+  }),
+
   previewImport: asyncHandler(async (req: Request, res: Response) => {
-    const data = await studentService.preview(req.body.csv);
+    const data = await userService.preview(req.body.csv);
     res.json({ success: true, message: "Preview import", data });
   }),
 
   import: asyncHandler(async (req: Request, res: Response) => {
-    const data = await studentService.import(req.body.csv);
+    const data = await userService.import(req.body.csv);
     res.json({ success: true, message: "Import siswa selesai", data });
   }),
 
   pathRequests: asyncHandler(async (req: Request, res: Response) => {
-    const data = await studentService.listPathRequests(req.validatedQuery ?? {});
+    const data = await userService.listPathRequests(req.validatedQuery ?? {});
     res.json({ success: true, message: "OK", data });
   }),
 
   reviewPathRequest: asyncHandler(async (req: Request, res: Response) => {
-    const data = await studentService.reviewPathRequest(
+    const data = await userService.reviewPathRequest(
       param(req, "id"),
       req.body.status,
       req.user!.sub,

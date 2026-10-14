@@ -22,6 +22,54 @@ const HEADER_MAP: Record<string, string> = {
   note: "catatan",
 };
 
+const USER_SELECT = {
+  id: true,
+  name: true,
+  email: true,
+  role: true,
+  nim: true,
+  prodi: true,
+  avatarUrl: true,
+  createdAt: true,
+  pathEnrollments: {
+    include: { path: { select: { id: true, name: true, slug: true } } },
+  },
+} as const;
+
+function mapUser(item: {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  nim: string | null;
+  prodi: string | null;
+  avatarUrl: string | null;
+  createdAt: Date;
+  pathEnrollments: {
+    id: string;
+    status: string;
+    path: { id: string; name: string; slug: string };
+  }[];
+}) {
+  return {
+    id: item.id,
+    name: item.name,
+    email: item.email,
+    role: item.role,
+    nim: item.nim,
+    prodi: item.prodi,
+    avatarUrl: item.avatarUrl,
+    createdAt: item.createdAt,
+    paths: item.pathEnrollments.map((enrollment) => ({
+      id: enrollment.path.id,
+      name: enrollment.path.name,
+      slug: enrollment.path.slug,
+      status: enrollment.status,
+      enrollmentId: enrollment.id,
+    })),
+  };
+}
+
 /** Parser CSV yang sadar tanda kutip ("" escape, koma & newline di dalam kutip) */
 export function parseCsv(text: string): string[][] {
   const clean = text.replace(/^\uFEFF/, "").replace(/\r\n?/g, "\n");
@@ -113,9 +161,7 @@ async function buildPreview(csv: string): Promise<ImportPreview> {
   });
 
   if (index.nama === undefined || index.nim === undefined) {
-    throw ApiError.badRequest(
-      'Header CSV wajib punya kolom "nama" dan "nim"',
-    );
+    throw ApiError.badRequest('Header CSV wajib punya kolom "nama" dan "nim"');
   }
 
   const cell = (row: string[], field: string) =>
@@ -180,7 +226,9 @@ async function buildPreview(csv: string): Promise<ImportPreview> {
       );
     }
 
-    const email = (emailRaw || (nim ? `${nim}@student.provoks.id` : "")).toLowerCase();
+    const email = (
+      emailRaw || (nim ? `${nim}@student.provoks.id` : "")
+    ).toLowerCase();
     if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       problems.push("format email tidak valid");
     }
@@ -193,10 +241,7 @@ async function buildPreview(csv: string): Promise<ImportPreview> {
     if (!problems.length && (nim || email)) {
       const existing = await prisma.user.findFirst({
         where: {
-          OR: [
-            ...(nim ? [{ nim }] : []),
-            ...(email ? [{ email }] : []),
-          ],
+          OR: [...(nim ? [{ nim }] : []), ...(email ? [{ email }] : [])],
         },
         select: { id: true },
       });
@@ -238,14 +283,16 @@ async function buildPreview(csv: string): Promise<ImportPreview> {
       ok: rows.filter((row) => row.status === "ok").length,
       warning: rows.filter((row) => row.status === "warning").length,
       error: rows.filter((row) => row.status === "error").length,
-      create: rows.filter((row) => row.status !== "error" && row.action === "create").length,
-      update: rows.filter((row) => row.status !== "error" && row.action === "update").length,
+      create: rows.filter((row) => row.status !== "error" && row.action === "create")
+        .length,
+      update: rows.filter((row) => row.status !== "error" && row.action === "update")
+        .length,
       paths: [...pathCount.values()].sort((a, b) => b.count - a.count),
     },
   };
 }
 
-export const studentService = {
+export const userService = {
   preview: buildPreview,
 
   /** Import siswa: buat/perbarui user + enrollment path (APPROVED) */
@@ -334,14 +381,15 @@ export const studentService = {
     return result;
   },
 
-  /** Daftar siswa + path yang diikuti */
+  /** Daftar user (semua role) + filter role / path / pencarian */
   async list(query: Record<string, unknown>) {
     const { page, perPage, skip, take } = getPagination(query);
     const search = String(query.search ?? "").trim();
     const pathId = String(query.pathId ?? "").trim();
+    const role = String(query.role ?? "").trim().toUpperCase();
 
     const where = {
-      role: "STUDENT" as const,
+      ...(role && role !== "ALL" ? { role: role as never } : {}),
       ...(search
         ? {
             OR: [
@@ -360,41 +408,64 @@ export const studentService = {
         skip,
         take,
         orderBy: { name: "asc" },
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          nim: true,
-          prodi: true,
-          createdAt: true,
-          pathEnrollments: {
-            include: { path: { select: { id: true, name: true, slug: true } } },
-          },
-        },
+        select: USER_SELECT,
       }),
       prisma.user.count({ where }),
     ]);
 
-    return paginated(
-      items.map((item) => ({
-        id: item.id,
-        name: item.name,
-        email: item.email,
-        nim: item.nim,
-        prodi: item.prodi,
-        createdAt: item.createdAt,
-        paths: item.pathEnrollments.map((enrollment) => ({
-          id: enrollment.path.id,
-          name: enrollment.path.name,
-          slug: enrollment.path.slug,
-          status: enrollment.status,
-          enrollmentId: enrollment.id,
-        })),
-      })),
-      total,
-      page,
-      perPage,
-    );
+    return paginated(items.map(mapUser), total, page, perPage);
+  },
+
+  /** Update data user (password opsional) */
+  async update(id: string, payload: Record<string, unknown>) {
+    const user = await prisma.user.findUnique({ where: { id } });
+    if (!user) throw ApiError.notFound("User tidak ditemukan");
+
+    const data: Record<string, unknown> = {};
+    if (payload.name !== undefined) data.name = payload.name;
+    if (payload.email !== undefined) data.email = String(payload.email).toLowerCase();
+    if (payload.role !== undefined) data.role = payload.role;
+    if (payload.nim !== undefined) data.nim = payload.nim || null;
+    if (payload.prodi !== undefined) data.prodi = payload.prodi || null;
+    if (payload.password) data.password = await hash(String(payload.password), 10);
+
+    try {
+      const updated = await prisma.user.update({
+        where: { id },
+        data,
+        select: USER_SELECT,
+      });
+      return mapUser(updated);
+    } catch (error) {
+      if (
+        typeof error === "object" &&
+        error !== null &&
+        (error as { code?: string }).code === "P2002"
+      ) {
+        throw ApiError.badRequest("Email atau NIM sudah dipakai user lain");
+      }
+      throw error;
+    }
+  },
+
+  /** Hapus user */
+  async remove(id: string, actorId: string) {
+    if (id === actorId) {
+      throw ApiError.badRequest("Tidak bisa menghapus akun sendiri");
+    }
+
+    const user = await prisma.user.findUnique({ where: { id } });
+    if (!user) throw ApiError.notFound("User tidak ditemukan");
+
+    if (user.role === "ADMIN") {
+      const adminCount = await prisma.user.count({ where: { role: "ADMIN" } });
+      if (adminCount <= 1) {
+        throw ApiError.badRequest("Minimal harus ada 1 admin");
+      }
+    }
+
+    await prisma.user.delete({ where: { id } });
+    return { id };
   },
 
   /** Permintaan masuk path (PENDING) */
@@ -413,7 +484,9 @@ export const studentService = {
         take,
         orderBy: { createdAt: "desc" },
         include: {
-          user: { select: { id: true, name: true, email: true, nim: true, prodi: true } },
+          user: {
+            select: { id: true, name: true, email: true, nim: true, prodi: true },
+          },
           path: { select: { id: true, name: true, slug: true, isFastTrack: true } },
         },
       }),

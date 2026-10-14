@@ -4,11 +4,23 @@ export const importCsvSchema = z.object({
   csv: z.string().min(1, "File CSV kosong"),
 });
 
-export const listStudentQuerySchema = z.object({
+const roleEnum = z.enum(["ADMIN", "INSTRUCTOR", "STUDENT"]);
+
+export const listUserQuerySchema = z.object({
   page: z.coerce.number().optional(),
   perPage: z.coerce.number().optional(),
   search: z.string().optional(),
   pathId: z.string().optional(),
+  role: z.enum(["ADMIN", "INSTRUCTOR", "STUDENT", "ALL"]).optional(),
+});
+
+export const updateUserSchema = z.object({
+  name: z.string().min(2, "Nama minimal 2 karakter").optional(),
+  email: z.string().email("Format email tidak valid").optional(),
+  role: roleEnum.optional(),
+  nim: z.string().max(30).optional(),
+  prodi: z.string().max(120).optional(),
+  password: z.string().min(6, "Password minimal 6 karakter").optional().or(z.literal("")),
 });
 
 export const listPathRequestQuerySchema = z.object({
@@ -27,4 +39,4 @@ export const requestPathSchema = z.object({
   note: z.string().max(300).optional(),
 });
 
-export const studentIdParamSchema = z.object({ id: z.string().min(1) });
+export const userIdParamSchema = z.object({ id: z.string().min(1) });

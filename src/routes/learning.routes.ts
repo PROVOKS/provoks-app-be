@@ -10,7 +10,7 @@ import {
   submitQuizSchema,
   updateProgressSchema,
 } from "../validators/learning.schema";
-import { requestPathSchema } from "../validators/student.schema";
+import { requestPathSchema } from "../validators/user.schema";
 
 export const learningRoutes = Router();
 
