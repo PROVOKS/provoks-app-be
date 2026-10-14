@@ -10,6 +10,7 @@ import {
   submitQuizSchema,
   updateProgressSchema,
 } from "../validators/learning.schema";
+import { requestPathSchema } from "../validators/student.schema";
 
 export const learningRoutes = Router();
 
@@ -19,6 +20,15 @@ learningRoutes.get(
   "/my-courses",
   ...student,
   learningController.myCourses,
+);
+
+learningRoutes.get("/paths", ...student, learningController.myPaths);
+
+learningRoutes.post(
+  "/paths/request",
+  ...student,
+  validate({ body: requestPathSchema }),
+  learningController.requestPath,
 );
 
 learningRoutes.get(

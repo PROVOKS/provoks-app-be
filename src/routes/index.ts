@@ -7,6 +7,7 @@ import { learningRoutes } from "./learning.routes";
 import { pathRoutes } from "./path.routes";
 import { quizRoutes } from "./quiz.routes";
 import { silabusRoutes } from "./silabus.routes";
+import { studentRoutes } from "./student.routes";
 import { tagRoutes } from "./tag.routes";
 import { uploadRoutes } from "./upload.routes";
 
@@ -15,6 +16,7 @@ export const router = Router();
 router.use("/auth", authRoutes);
 router.use("/paths", pathRoutes);
 router.use("/tags", tagRoutes);
+router.use("/students", studentRoutes);
 router.use("/courses", courseRoutes);
 router.use("/silabus", silabusRoutes);
 router.use("/blocks", blockRoutes);

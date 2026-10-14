@@ -288,8 +288,32 @@ async function seedCourse(pathIds: Record<string, string>, tagIds: Record<string
   console.log(`  • silabus part ${pengenalan.slug}, setup-environment, komponen-dan-jsx`);
 }
 
-async function cleanupLegacyPaths() {
-  const result = await prisma.path.deleteMany({
+/// siswa demo (andi) otomatis APPROVED di path tempat course contoh berada
+async function seedStudentPath() {
+  const student = await prisma.user.findUnique({
+    where: { email: "andi@provoks.id" },
+  });
+  const course = await prisma.course.findUnique({
+    where: { slug: "full-stack-web-development" },
+    select: { pathId: true },
+  });
+
+  if (!student || !course?.pathId) return;
+
+  await prisma.pathEnrollment.upsert({
+    where: { userId_pathId: { userId: student.id, pathId: course.pathId } },
+    update: {},
+    create: {
+      userId: student.id,
+      pathId: course.pathId,
+      status: "APPROVED",
+      note: "Seed demo",
+    },
+  });
+  console.log("  • path enrollment siswa demo (andi)");
+}
+
+async function cleanupLegacyPaths() {  const result = await prisma.path.deleteMany({
     where: {
       slug: { in: LEGACY_PATH_SLUGS },
       courses: { none: {} },
@@ -312,6 +336,9 @@ async function main() {
 
   console.log("\nCourse:");
   await seedCourse(pathIds, tagIds);
+
+  console.log("\nPath siswa demo:");
+  await seedStudentPath();
 
   console.log("\nRapikan path lama:");
   await cleanupLegacyPaths();

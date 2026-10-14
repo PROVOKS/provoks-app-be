@@ -104,6 +104,18 @@ export const learningService = {
       throw ApiError.notFound("Course tidak ditemukan");
     }
 
+    // course yang terikat path hanya bisa diakses siswa yang sudah APPROVED di path tsb
+    if (course.pathId) {
+      const pathEnrollment = await prisma.pathEnrollment.findUnique({
+        where: { userId_pathId: { userId, pathId: course.pathId } },
+      });
+      if (!pathEnrollment || pathEnrollment.status !== "APPROVED") {
+        throw ApiError.forbidden(
+          "Kamu belum terdaftar di path course ini. Ajukan akses dulu ya.",
+        );
+      }
+    }
+
     // auto-enroll
     const enrollment = await prisma.enrollment.upsert({
       where: { userId_courseId: { userId, courseId: course.id } },
@@ -315,10 +327,22 @@ export const learningService = {
     return progressPercent;
   },
 
-  /** Daftar course yang diikuti siswa */
+  /** Daftar course yang diikuti siswa (hanya dari path yang APPROVED) */
   async myCourses(userId: string) {
     const enrollments = await prisma.enrollment.findMany({
-      where: { userId },
+      where: {
+        userId,
+        course: {
+          OR: [
+            { pathId: null },
+            {
+              path: {
+                pathEnrollments: { some: { userId, status: "APPROVED" } },
+              },
+            },
+          ],
+        },
+      },
       orderBy: { enrolledAt: "desc" },
       include: {
         course: {
@@ -559,5 +583,77 @@ export const learningService = {
       submittedAt: attempt.submittedAt,
       review,
     };
+  },
+
+  /** Daftar path + status keanggotaan siswa (untuk katalog & pengajuan) */
+  async myPaths(userId: string) {
+    const paths = await prisma.path.findMany({
+      where: { status: "PUBLISHED" },
+      orderBy: { name: "asc" },
+      include: {
+        _count: { select: { courses: { where: { status: "PUBLISHED" } } } },
+        pathEnrollments: { where: { userId } },
+      },
+    });
+
+    return paths.map((path) => {
+      const enrollment = path.pathEnrollments[0];
+      return {
+        id: path.id,
+        name: path.name,
+        slug: path.slug,
+        description: path.description,
+        isFastTrack: path.isFastTrack,
+        courseCount: path._count.courses,
+        status: enrollment?.status ?? null,
+        enrollmentId: enrollment?.id ?? null,
+        note: enrollment?.note ?? null,
+      };
+    });
+  },
+
+  /** Ajukan masuk path (path pertama otomatis APPROVED, berikutnya butuh approval) */
+  async requestPath(userId: string, pathId: string, note?: string) {
+    const path = await prisma.path.findUnique({ where: { id: pathId } });
+    if (!path || path.status !== "PUBLISHED") {
+      throw ApiError.notFound("Path tidak ditemukan");
+    }
+
+    const existing = await prisma.pathEnrollment.findUnique({
+      where: { userId_pathId: { userId, pathId } },
+    });
+
+    if (existing) {
+      if (existing.status === "APPROVED") {
+        throw ApiError.badRequest("Kamu sudah terdaftar di path ini");
+      }
+      if (existing.status === "PENDING") {
+        throw ApiError.badRequest("Pengajuanmu masih menunggu approval");
+      }
+      // REJECTED → boleh ajukan lagi
+      return prisma.pathEnrollment.update({
+        where: { id: existing.id },
+        data: {
+          status: "PENDING",
+          note: note ?? null,
+          reviewedBy: null,
+          reviewedAt: null,
+        },
+      });
+    }
+
+    // siswa baru: path pertama langsung disetujui
+    const approvedCount = await prisma.pathEnrollment.count({
+      where: { userId, status: "APPROVED" },
+    });
+
+    return prisma.pathEnrollment.create({
+      data: {
+        userId,
+        pathId,
+        status: approvedCount === 0 ? "APPROVED" : "PENDING",
+        note: note ?? (approvedCount === 0 ? "Path pertama" : null),
+      },
+    });
   },
 };
