@@ -30,10 +30,20 @@ const USERS = [
 // Sample katalog
 // ============================================================
 const PATHS = [
-  { name: "Frontend Development", isFastTrack: false },
-  { name: "Backend Development", isFastTrack: false },
-  { name: "Full-Stack Development", isFastTrack: true },
-  { name: "UI/UX Design", isFastTrack: false },
+  { name: "Web Dev", isFastTrack: false },
+  { name: "UI/UX & PM", isFastTrack: false },
+  { name: "IOT", isFastTrack: false },
+  { name: "Game Dev", isFastTrack: false },
+  { name: "Mobile", isFastTrack: false },
+];
+
+/// path lama dari seed versi awal (dirapikan karena sekarang pakai path dari data peserta)
+const LEGACY_PATH_SLUGS = [
+  "frontend-development",
+  "backend-development",
+  "full-stack-development",
+  "uiux-design",
+  "uiux-pm",
 ];
 
 const TAGS = [
@@ -51,9 +61,8 @@ function slugify(value: string) {
   return value
     .toLowerCase()
     .trim()
-    .replace(/[^a-z0-9\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-");
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }
 
 async function seedUsers() {
@@ -93,12 +102,11 @@ async function seedPaths() {
   return map;
 }
 
-async function seedTags() {
-  const map: Record<string, string> = {};
+async function seedTags() {  const map: Record<string, string> = {};
   for (const item of TAGS) {
     const tag = await prisma.tag.upsert({
-      where: { slug: slugify(item.name) },
-      update: { name: item.name, category: item.category },
+      where: { name: item.name },
+      update: { category: item.category },
       create: {
         name: item.name,
         slug: slugify(item.name),
@@ -123,7 +131,7 @@ async function seedCourse(pathIds: Record<string, string>, tagIds: Record<string
         "Membangun aplikasi web production-ready dari nol: HTML, CSS, JavaScript, React, dan Node.js.",
       status: "PUBLISHED",
       passingGrade: 70,
-      pathId: pathIds["Full-Stack Development"],
+      pathId: pathIds["Web Dev"],
       tags: {
         create: ["React", "Node.js", "Tailwind CSS"].map((name) => ({
           tagId: tagIds[name],
@@ -280,6 +288,18 @@ async function seedCourse(pathIds: Record<string, string>, tagIds: Record<string
   console.log(`  • silabus part ${pengenalan.slug}, setup-environment, komponen-dan-jsx`);
 }
 
+async function cleanupLegacyPaths() {
+  const result = await prisma.path.deleteMany({
+    where: {
+      slug: { in: LEGACY_PATH_SLUGS },
+      courses: { none: {} },
+    },
+  });
+  if (result.count > 0) {
+    console.log(`  • hapus ${result.count} path lama (tidak terpakai)`);
+  }
+}
+
 async function main() {
   console.log("🌱 Seeding Provoks LMS...\n");
 
@@ -292,6 +312,9 @@ async function main() {
 
   console.log("\nCourse:");
   await seedCourse(pathIds, tagIds);
+
+  console.log("\nRapikan path lama:");
+  await cleanupLegacyPaths();
 
   console.log("\n✅ Seed selesai.");
   console.log("\nAkun untuk login:");

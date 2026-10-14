@@ -59,6 +59,7 @@ model User {
   enrollments Enrollment[]
   progress    SilabusProgress[]
   quizAttempts QuizAttempt[]
+  pathEnrollments PathEnrollment[]
 }
 
 // ---------- katalog ----------
@@ -75,6 +76,8 @@ model Path {
   updatedAt   DateTime      @updatedAt
 
   courses Course[]
+
+  pathEnrollments PathEnrollment[]
 }
 
 model Tag {
@@ -106,6 +109,31 @@ model Course {
   tags        CourseTag[]
   parts       CoursePart[]
   enrollments Enrollment[]
+}
+
+/// keanggotaan siswa di sebuah path (perlu approval untuk path tambahan)
+enum PathEnrollmentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model PathEnrollment {
+  id         String               @id @default(cuid())
+  userId     String
+  pathId     String
+  status     PathEnrollmentStatus @default(PENDING)
+  note       String?
+  reviewedBy String?
+  reviewedAt DateTime?
+  createdAt  DateTime             @default(now())
+  updatedAt  DateTime             @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  path Path @relation(fields: [pathId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, pathId])
+  @@index([status])
 }
 
 model CourseTag {

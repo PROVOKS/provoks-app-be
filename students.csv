@@ -1,0 +1,238 @@
+REVEAL PATH PESERTA LOLOS,,,,,,,,,,
+Sumber nama: tab Semua-Yang-Lolos. Path diambil dari Penentuan Path; jika belum ada, diambil dari Raw Data (Pilihan Path Utama). Kolom I:K = kolom bantu. Sel kuning di kolom I = ejaan nama di Penentuan Path yang beda (diisi manual).,,,,,,,,,,
+,,,,,,,,,,
+No,Nama,NIM,Prodi,Reveal Path,Sumber Path,Catatan,,Nama Acuan (Penentuan Path),Baris Penentuan Path,Baris Raw Data
+1,RENI ANDRIANI,263140701111002,Teknologi Informasi,UI/UX & PM,Raw Data (Path Utama),,,RENI ANDRIANI,,2
+2,AHMAD FARIS ABDURRASYID,263140701111055,Teknologi Informasi,Web Dev,Penentuan Path,"Ada 2 entri di Penentuan Path, dipakai entri pertama.",,AHMAD FARIS ABDURRASYID,31,3
+3,PRABU SETYO AKHMAD,263140707111061,Teknologi Informasi,Mobile,Penentuan Path,,,PRABU SETYO AKHMAD,5,4
+4,MUHAMMAD HAIKAL AL MACCA,264140807111003,Teknologi Rekayasa Perangkat Lunak,Game Dev,Penentuan Path,,,MUHAMMAD HAIKAL AL MACCA,71,5
+5,NAZIFA IZZATI,253140701111003,Teknologi Informasi,Web Dev,Raw Data (Path Utama),,,NAZIFA IZZATI,,6
+6,MOHAMMAD AXEL LINGGAR ALIF KHAN,263140701111014,Teknologi Informasi,Web Dev,Penentuan Path,,,MOHAMMAD AXEL LINGGAR ALIF KHAN,32,7
+7,Muhamad Farend Aydin,263140701111058,Teknologi Informasi,IOT,Penentuan Path,,,Muhammad Farend Aydin,68,9
+8,DHIA MIRZA HANDHIONO,1263140701111043,Teknologi Informasi,Web Dev,Raw Data (Path Utama),"NIM tidak 15 digit, cek.",,DHIA MIRZA HANDHIONO,,10
+9,Mutiara Azzahrani Dwi Nur Ifada,263140707111024,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,Mutiara Azzahrani Dwi Nur Ifada,101,11
+10,RAFI SOFYAN TRIYANTO,263140701111013,Teknologi Informasi,Web Dev,Penentuan Path,,,RAFI SOFYAN TRIYANTO,17,12
+11,M. RAYKHAN SABILAH HAFIZH,263140700111025,Teknologi Informasi,UI/UX & PM,Raw Data (Path Utama),,,M. RAYKHAN SABILAH HAFIZH,,14
+12,MAHENDRA SAKA,263140700111026,Teknologi Informasi,Web Dev,Penentuan Path,"Ada 2 entri di Penentuan Path, dipakai entri pertama.",,MAHENDRA SAKA,33,15
+13,DAVIND PERMANA SYAHRONI,263140700111015,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,DAVIND PERMANA SYAHRONI,10,16
+14,DAFFA DWI YASHA,263140701111044,Teknologi Informasi,Web Dev,Penentuan Path,"Ada 2 entri di Penentuan Path, dipakai entri pertama.",,DAFFA DWI YASHA,57,17
+15,SUCI NURUL FATIMAH,263140707111038,Teknologi Informasi,Web Dev,Penentuan Path,,,SUCI NURUL FATIMAH,72,18
+16,NATASYA PUTRI,253140701111056,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,NATASYA PUTRI,47,19
+17,Ardenta Dica Evanandy,263140707111018,Teknologi Informasi,Web Dev,Penentuan Path,,,Ardenta Dica Evanandy,6,128
+18,ARYA RINEKSA SATRIA WARDANA,263140700111008,Teknologi Informasi,Web Dev,Penentuan Path,,,ARYA RINEKSA SATRIA WARDANA,56,21
+19,MUHAMAD RASYA APRILLAH AL FARISI,263140701111047,Teknologi Informasi,Web Dev,Penentuan Path,,,MUHAMAD RASYA APRILLAH AL FARISI,73,22
+20,FITROATUL QOMARIAH,263140701111010,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,FITROATUL QOMARIAH,39,23
+21,Seiichiro Azka Bilhaq Julen,263140707111021,Teknologi Informasi,IOT,Penentuan Path,,,Seiichiro Azka Bilhaq Julen,16,24
+22,Amelia dini kusuma ayu,263140707111027,Teknologi Informasi,Web Dev,Penentuan Path,"Ada 2 entri di Penentuan Path, dipakai entri pertama.",,Amelia dini kusuma ayu,58,25
+23,DEA APRILIA EKA PUTRI,263140707111042,Teknologi Informasi,IOT,Penentuan Path,,,DEA APRILIA EKA PUTRI,74,26
+24,WINA LISTIANI,263140707111035,Teknologi Informasi,Web Dev,Penentuan Path,,,WINA LISTIANI,59,27
+25,Fellasifa Mehdia Fitri Ramadhani,263140707111043,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,Fellasifa Mehdia Fitri Ramadhani,11,28
+26,Haikal Muhammad Ar-rabani,264140807111007,Teknologi Rekayasa Perangkat Lunak,Web Dev,Penentuan Path,,,Haikal Muhammad Ar-rabani,60,29
+27,Isna Miftahul Azizah,263140700111018,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,Isna Miftahul Azizah,83,30
+28,Anugrah Abiyatar Saputra,263140707111029,Teknologi Informasi,Web Dev,Penentuan Path,,,Anugrah Abiyatar Saputra,61,31
+29,MOCH AZRIEL ALLYANDRA PERMANA,253140701111053,Teknologi Informasi,Game Dev,Penentuan Path,,,MOCH AZRIEL ALLYANDRA PERMANA,15,32
+30,Gathan Ega Fyandhika,264140807111006,Teknologi Rekayasa Perangkat Lunak,IOT,Penentuan Path,,,Gathan Ega Viandika,91,33
+31,MYISHA ZAYAN AQILA,263140701111065,Teknologi Informasi,Web Dev,Penentuan Path,,,MYISHA ZAYAN AQILA,75,34
+32,Trinanda Grace Tampubolon,263140700111046,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,Trinanda Grace Tampubolon,99,35
+33,PUTRI MEGA ANDINI,263140701111027,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,PUTRI MEGA ANDINI,49,36
+34,VEMYTIYA HIDAYAHTULLOH,263140707111025,Teknologi Informasi,UI/UX & PM,Raw Data (Path Utama),,,VEMYTIYA HIDAYAHTULLOH,,37
+35,Hafizha Zahwa Putri,263140701111050,Teknologi Informasi,Web Dev,Penentuan Path,,,Hafizha Zahwa Putri,62,38
+36,RISNANDA AULYA EKA PUTRI,263140707111026,Teknologi Informasi,Web Dev,Penentuan Path,"Ada 2 entri di Penentuan Path, dipakai entri pertama.",,RISNANDA AULYA EKA PUTRI,35,39
+37,LARISSA NERYS EGAFATIKA,263140700111010,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,LARISSA NERYS EGAFATIKA,76,40
+38,AHMAD MA'SUM,263140707111117,Teknologi Informasi,Mobile,Penentuan Path,,,AHMAD MA'SUM,42,41
+39,MUHAMMAD SALMAN ALFACHRI,264140807111022,Teknologi Rekayasa Perangkat Lunak,IOT,Penentuan Path,,,MUHAMMAD SALMAN ALFACHRI,53,42
+40,GHEA ANANDA NOVITA,263140701111034,Teknologi Informasi,Web Dev,Raw Data (Path Utama),,,GHEA ANANDA NOVITA,,43
+41,MH. GALANG SATRIO NAGORO,263140707111020,Teknologi Informasi,Web Dev,Penentuan Path,,,MH. GALANG SATRIO NAGORO,63,44
+42,Adrian Maulana Rahman,264140807111024,Teknologi Rekayasa Perangkat Lunak,Mobile,Penentuan Path,,,Adrian Maulana Rahman,97,45
+43,MUFIDA NURLITA AULIA,263140701111009,Teknologi Informasi,Web Dev,Penentuan Path,,,MUFIDA NURLITA AULIA,77,46
+44,LIDYA DEVI NOVIANA,263140707111130,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,LIDYA DEVI NOVIANA,48,47
+45,MUHAMMAD ERI SANDY FEBRIANO HADINATAPUTRA,263140707111049,Teknologi Informasi,IOT,Penentuan Path,,,MUHAMMAD ERI SANDY FEBRIANO HADINATAPUTRA,54,48
+46,AGUS DANIEL SIMORANGKIR,263140701111012,Teknologi Informasi,Web Dev,Raw Data (Path Utama),,,AGUS DANIEL SIMORANGKIR,,49
+47,ZAKIYAH MAS'UDAH,263140707111039,Teknologi Informasi,Web Dev,Penentuan Path,,,ZAKIYAH MAS'UDAH,64,50
+48,MA'MUN AFANDI IMADUDIN,263140701111022,Teknologi Informasi,Web Dev,Penentuan Path,,,MA'MUN AFANDI IMADUDIN (Affandi),92,51
+49,ELSHA PUTRI RAHMADANI,263140701111040,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,ELSHA PUTRI RAHMADANI,84,52
+50,KIANDRA ARYASATYA ERWIDIA,263140701111019,Teknologi Informasi,Web Dev,Penentuan Path,"Ada 2 entri di Penentuan Path, dipakai entri pertama.",,KIANDRA ARYASATYA ERWIDIA,36,53
+51,SAHFIRA NOVALINDA,263140701111020,Teknologi Informasi,Web Dev,Penentuan Path,,,SAHFIRA NOVALINDA,55,54
+52,M. RIDHO ALFARIDZI NASUTION,263140700111027,Teknologi Informasi,Mobile,Penentuan Path,,,M. RIDHO ALFARIDZI NASUTION,66,56
+53,NAZWA LENDRA PUTRI,263140701111029,Teknologi Informasi,Web Dev,Penentuan Path,,,NAZWA LENDRA PUTRI,93,57
+54,DIANDRA MAHARANI,263140700111007,Teknologi Informasi,Web Dev,Penentuan Path,,,DIANDRA MAHARANI,78,58
+55,MARGARETH THERESIA ROTUA SIMANUNGKALIT,263140700111039,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,MARGARETH THERESIA ROTUA SIMANUNGKALIT,40,59
+56,Pandu Renoto Widi Kusumo,263140700111021,Teknologi Informasi,Mobile,Penentuan Path,,,Pandu Renoto Widi Kusumo,67,60
+57,Noer Syifa Sugiyanto,263140700111035,Teknologi Informasi,IOT,Raw Data (Path Utama),,,Noer Syifa Sugiyanto,,61
+58,REVANDRA AHZA RIZKIA,253140700111036,Teknologi Informasi,Game Dev,Penentuan Path,,,REVANDRA AHZA RIZKIA,52,62
+59,SULTAN RASSYA WICAKSANA,264140807111027,Teknologi Rekayasa Perangkat Lunak,Mobile,Penentuan Path,,,SULTAN RASSYA WICAKSANA,98,63
+60,LAURA ELVINA SAFIRA RAMADANI,263140701111033,Teknologi Informasi,IOT,Penentuan Path,,,LAURA ELVINA SAFIRA RAMADANI,88,64
+61,Salsah Ramadhani,263140701111024,Teknologi Informasi,UI/UX & PM,Raw Data (Path Utama),,,Salsah Ramadhani,,65
+62,Naila Putri Sahiro,263140700111049,Teknologi Informasi,UI/UX & PM,Penentuan Path,"Ada 2 entri di Penentuan Path, dipakai entri pertama.",,Naila Putri Sahiro,12,66
+63,NIAMIKA AL KHOIRIYA PUTRI YASIN,263140707111036,Teknologi Informasi,UI/UX & PM,Raw Data (Path Utama),,,NIAMIKA AL KHOIRIYA PUTRI YASIN,,67
+64,Faiz Ramadhan,263140700111030,Teknologi Informasi,Web Dev,Penentuan Path,,,Faiz Ramadhan,65,68
+65,RIRIS SAFRILLA,263140707111123,Teknologi Informasi,Web Dev,Penentuan Path,,,RIRIS SAFRILLA,94,69
+66,Dylan Leonaldo Pratama,264140807111037,Teknologi Rekayasa Perangkat Lunak,UI/UX & PM,Raw Data (Path Utama),,,Dylan Leonaldo Pratama,,70
+67,Toriqul irfani barda,263140707111136,Teknologi Informasi,Web Dev,Penentuan Path,,,Toriqul irfani barda,37,71
+68,ELVARETTA DWI ARISTAWATI,263140701111052,Teknologi Informasi,Mobile,Raw Data (Path Utama),,,ELVARETTA DWI ARISTAWATI,,73
+69,ALFA FATIMATUZAHRO',253140701111043,Teknologi Informasi,IOT,Penentuan Path,,,ALFA FATIMATUZAHRO',89,74
+70,ZAFIRA ATA HAYAKANA,263140707111037,Teknologi Informasi,IOT,Penentuan Path,"Nama ganda di daftar lolos, cek. NIM kembar, cek.",,ZAFIRA ATA HAYAKANA,104,75
+71,Asilah Fadya Aufa,263140707111034,Teknologi Informasi,UI/UX & PM,Raw Data (Path Utama),,,Asilah Fadya Aufa,,76
+72,Nadhif Farras Hanidhio,263140707111115,Teknologi Informasi,Web Dev,Penentuan Path,,,Nadhif Farras Hanidhio,38,77
+73,DHIA PUTRI ZAAFARANI,263140701111031,Teknologi Informasi,Web Dev,Penentuan Path,,,DHIA PUTRI ZAAFARANI,50,78
+74,FADHIL HASAN YUNA,26314070711126,Teknologi Informasi,IOT,Raw Data (Path Utama),"NIM tidak 15 digit, cek.",,FADHIL HASAN YUNA,,80
+75,Muhammad Rafa Al Qudsiya,264140807111032,Teknologi Rekayasa Perangkat Lunak,Web Dev,Penentuan Path,,,Rafa,82,81
+76,Dava Ari Ardiansyah,263140707111064,Teknologi Informasi,Web Dev,Penentuan Path,,,Dava Ari Ardiansyah,90,82
+77,ADITIYA DWI PARAMITA A,263140701111045,Teknologi Informasi,Web Dev,Raw Data (Path Utama),,,ADITIYA DWI PARAMITA A,,83
+78,Sahid Paramarta,263140707111088,Teknologi Informasi,IOT,Penentuan Path,,,Sahid Paramarta,79,84
+79,Achmad Mu'ammar Kadafi Rochim,263140701111070,Teknologi Informasi,Game Dev,Raw Data (Path Utama),,,Achmad Mu'ammar Kadafi Rochim,,86
+80,MOHAMMAD NOOR LATIF,263140701111030,Teknologi Informasi,IOT,Penentuan Path,,,MOHAMMAD NOOR LATIF,25,87
+81,MOCHAVY AMADEO ALGHIFARI,263140700111054,Teknologi Informasi,Web Dev,Penentuan Path,,,MOCHAVY AMADEO ALGHIFARI,95,88
+82,ABDILLAH TSAQIF ALFA ROSSY,263140707111135,Teknologi Informasi,Web Dev,Penentuan Path,,,ABDILLAH TSAQIF ALFA ROSSY,8,89
+83,BINTANG BANGKIT SUBANDI,263140707111006,Teknologi Informasi,Web Dev,Penentuan Path,,,BINTANG BANGKIT SUBANDI,7,90
+84,MAURA VIRGINIA ALFAREZA,263140701111001,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,Maura Virginia Alfa Reza,27,91
+85,Muhammad Rifki Firdaus,263140700111019,Teknologi Informasi,Game Dev,Raw Data (Path Utama),,,Muhammad Rifki Firdaus,,93
+86,MUHAMAD IQBAL,263140700111036,Teknologi Informasi,Web Dev,Penentuan Path,,,MUHAMAD IQBAL,23,94
+87,Hasan,263140700111044,Teknologi Informasi,Game Dev,Raw Data (Path Utama),,,Hasan,,95
+88,MUHAMMAD SURYA FADILLAH,263140707111108,Teknologi Informasi,IOT,Penentuan Path,,,MUHAMMAD SURYA FADILLAH,80,96
+89,RAFIFAH NADIA PURNAWARMAN,263140707111071,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,Rofifah Nadia Purnawarman,26,97
+90,ANDRA MAULIYA FATIMATUS ZAHRA,263140707111103,Teknologi Informasi,Web Dev,Raw Data (Path Utama),,,ANDRA MAULIYA FATIMATUS ZAHRA,,98
+91,MOCHAMMAD AL MIZAN YA HAFIDL,253140701111026,Teknologi Informasi,Mobile,Penentuan Path,,,MOCHAMMAD AL MIZAN YA HAFIDL,9,99
+92,DEWI ROHILATUS SA ADAH,264140807111031,Teknologi Rekayasa Perangkat Lunak,Game Dev,Penentuan Path,,,DEWI ROHILATUS SA ADAH,102,100
+93,SHINTA JULIANA,263140707111053,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,SHINTA JULIANA,85,101
+94,Naisha Neva Aolita,263140707111059,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,Naisha Neva Aolita,13,102
+95,Tamar Septian Sitompul,264140807111008,Teknologi Rekayasa Perangkat Lunak,Game Dev,Penentuan Path,,,Tamar Septian Sitompul,21,103
+96,Verdina Ananda Putri,263140701111060,Teknologi Informasi,Web Dev,Penentuan Path,,,Verdina Ananda Putri,96,104
+97,JIHAN BERLIAN NASYWA AQIILAH,263140701111011,Teknologi Informasi,Web Dev,Raw Data (Path Utama),,,JIHAN BERLIAN NASYWA AQIILAH,,105
+98,Stephani Tabita Br Silitonga,263140701111035,Teknologi Informasi,Web Dev,Penentuan Path,"Ada 2 entri di Penentuan Path, dipakai entri pertama.",,Stephani Tabita Br Silitonga,81,107
+99,Mohammad Faiz Al Farizi,264140807111010,Teknologi Rekayasa Perangkat Lunak,Mobile,Penentuan Path,,,Mohammad Faiz Al Farizi,19,110
+100,Qodhri Al Azhar Hidayatullah,263140707111069,Teknologi Informasi,Web Dev,Raw Data (Path Utama),,,Qodhri Al Azhar Hidayatullah,,111
+101,Emir Rafael Hermawan,264140807111004,Teknologi Rekayasa Perangkat Lunak,Game Dev,Raw Data (Path Utama),,,Emir Rafael Hermawan,,112
+102,SHEFIRA RAHMAYUNI KHOIRUNNISA,263140707111121,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,SHEFIRA RAHMAYUNI KHOIRUNNISA,30,113
+103,KHULUDIA DELAVITA YUNIAR SANTI,263140701111059,Teknologi Informasi,Web Dev,Penentuan Path,,,Kuludya Delavita Yuniarsangsih,28,114
+104,Maulana Majid Wijaya,263140700111020,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,Maulana Majid Wijaya,14,115
+105,GHATHFAN ABDUH,263140707111037,Teknologi Informasi,UI/UX & PM,Raw Data (Path Utama),"NIM kembar, cek.",,GHATHFAN ABDUH,,116
+106,Athailla Azrial Abbas,263140707111110,Teknologi Informasi,Game Dev,Penentuan Path,,,Athailla Azrial Abbas,103,117
+107,ZAFIRA ATA HAYAKANA,263140707111041,Teknologi Informasi,IOT,Penentuan Path,"Nama ganda di daftar lolos, cek.",,ZAFIRA ATA HAYAKANA,104,75
+108,Maulidina Zairah,263140700111034,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,Maulidina Zairah,87,120
+109,M Ikhsan Panusunan Nasution,253140707111064,Teknologi Informasi,IOT,Penentuan Path,,,M Ikhsan Panusunan Nasution,20,121
+110,HAURA RIFKI,263140707111013,Teknologi Informasi,Web Dev,Penentuan Path,,,HAURA RIFKI,22,122
+111,CHRISTIAN AUDREY ALBERTINO,263140701111075,Teknologi Informasi,Web Dev,Raw Data (Path Utama),,,CHRISTIAN AUDREY ALBERTINO,,123
+112,Panji Badar Alam,263140707111016,Teknologi Informasi,Web Dev,Penentuan Path,,,Panji Badhar Alam,29,124
+113,FA MOZZA SUKOCO,263140701111067,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,FA MOZZA SUKOCO,18,125
+114,Dharma Bektiasdi,263140707111065,Teknologi Informasi,Web Dev,Penentuan Path,,,Dharma Bektiasdi,24,127
+115,Kifayatus Sa'diyah Taufik,263140700111002,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,Kifayatus Sa'diyah Taufik,100,8
+REVEAL PATH PESERTA LOLOS,,,,,,,,,,
+Sumber nama: tab Semua-Yang-Lolos. Path diambil dari Penentuan Path; jika belum ada, diambil dari Raw Data (Pilihan Path Utama). Kolom I:K = kolom bantu. Sel kuning di kolom I = ejaan nama di Penentuan Path yang beda (diisi manual).,,,,,,,,,,
+,,,,,,,,,,
+No,Nama,NIM,Prodi,Reveal Path,Sumber Path,Catatan,,Nama Acuan (Penentuan Path),Baris Penentuan Path,Baris Raw Data
+1,RENI ANDRIANI,263140701111002,Teknologi Informasi,UI/UX & PM,Raw Data (Path Utama),,,RENI ANDRIANI,,2
+2,AHMAD FARIS ABDURRASYID,263140701111055,Teknologi Informasi,Web Dev,Penentuan Path,"Ada 2 entri di Penentuan Path, dipakai entri pertama.",,AHMAD FARIS ABDURRASYID,31,3
+3,PRABU SETYO AKHMAD,263140707111061,Teknologi Informasi,Mobile,Penentuan Path,,,PRABU SETYO AKHMAD,5,4
+4,MUHAMMAD HAIKAL AL MACCA,264140807111003,Teknologi Rekayasa Perangkat Lunak,Game Dev,Penentuan Path,,,MUHAMMAD HAIKAL AL MACCA,71,5
+5,NAZIFA IZZATI,253140701111003,Teknologi Informasi,Web Dev,Raw Data (Path Utama),,,NAZIFA IZZATI,,6
+6,MOHAMMAD AXEL LINGGAR ALIF KHAN,263140701111014,Teknologi Informasi,Web Dev,Penentuan Path,,,MOHAMMAD AXEL LINGGAR ALIF KHAN,32,7
+7,Muhamad Farend Aydin,263140701111058,Teknologi Informasi,IOT,Penentuan Path,,,Muhammad Farend Aydin,68,9
+8,DHIA MIRZA HANDHIONO,1263140701111043,Teknologi Informasi,Web Dev,Raw Data (Path Utama),"NIM tidak 15 digit, cek.",,DHIA MIRZA HANDHIONO,,10
+9,Mutiara Azzahrani Dwi Nur Ifada,263140707111024,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,Mutiara Azzahrani Dwi Nur Ifada,101,11
+10,RAFI SOFYAN TRIYANTO,263140701111013,Teknologi Informasi,Web Dev,Penentuan Path,,,RAFI SOFYAN TRIYANTO,17,12
+11,M. RAYKHAN SABILAH HAFIZH,263140700111025,Teknologi Informasi,UI/UX & PM,Raw Data (Path Utama),,,M. RAYKHAN SABILAH HAFIZH,,14
+12,MAHENDRA SAKA,263140700111026,Teknologi Informasi,Web Dev,Penentuan Path,"Ada 2 entri di Penentuan Path, dipakai entri pertama.",,MAHENDRA SAKA,33,15
+13,DAVIND PERMANA SYAHRONI,263140700111015,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,DAVIND PERMANA SYAHRONI,10,16
+14,DAFFA DWI YASHA,263140701111044,Teknologi Informasi,Web Dev,Penentuan Path,"Ada 2 entri di Penentuan Path, dipakai entri pertama.",,DAFFA DWI YASHA,57,17
+15,SUCI NURUL FATIMAH,263140707111038,Teknologi Informasi,Web Dev,Penentuan Path,,,SUCI NURUL FATIMAH,72,18
+16,NATASYA PUTRI,253140701111056,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,NATASYA PUTRI,47,19
+17,Ardenta Dica Evanandy,263140707111018,Teknologi Informasi,Web Dev,Penentuan Path,,,Ardenta Dica Evanandy,6,128
+18,ARYA RINEKSA SATRIA WARDANA,263140700111008,Teknologi Informasi,Web Dev,Penentuan Path,,,ARYA RINEKSA SATRIA WARDANA,56,21
+19,MUHAMAD RASYA APRILLAH AL FARISI,263140701111047,Teknologi Informasi,Web Dev,Penentuan Path,,,MUHAMAD RASYA APRILLAH AL FARISI,73,22
+20,FITROATUL QOMARIAH,263140701111010,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,FITROATUL QOMARIAH,39,23
+21,Seiichiro Azka Bilhaq Julen,263140707111021,Teknologi Informasi,IOT,Penentuan Path,,,Seiichiro Azka Bilhaq Julen,16,24
+22,Amelia dini kusuma ayu,263140707111027,Teknologi Informasi,Web Dev,Penentuan Path,"Ada 2 entri di Penentuan Path, dipakai entri pertama.",,Amelia dini kusuma ayu,58,25
+23,DEA APRILIA EKA PUTRI,263140707111042,Teknologi Informasi,IOT,Penentuan Path,,,DEA APRILIA EKA PUTRI,74,26
+24,WINA LISTIANI,263140707111035,Teknologi Informasi,Web Dev,Penentuan Path,,,WINA LISTIANI,59,27
+25,Fellasifa Mehdia Fitri Ramadhani,263140707111043,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,Fellasifa Mehdia Fitri Ramadhani,11,28
+26,Haikal Muhammad Ar-rabani,264140807111007,Teknologi Rekayasa Perangkat Lunak,Web Dev,Penentuan Path,,,Haikal Muhammad Ar-rabani,60,29
+27,Isna Miftahul Azizah,263140700111018,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,Isna Miftahul Azizah,83,30
+28,Anugrah Abiyatar Saputra,263140707111029,Teknologi Informasi,Web Dev,Penentuan Path,,,Anugrah Abiyatar Saputra,61,31
+29,MOCH AZRIEL ALLYANDRA PERMANA,253140701111053,Teknologi Informasi,Game Dev,Penentuan Path,,,MOCH AZRIEL ALLYANDRA PERMANA,15,32
+30,Gathan Ega Fyandhika,264140807111006,Teknologi Rekayasa Perangkat Lunak,IOT,Penentuan Path,,,Gathan Ega Viandika,91,33
+31,MYISHA ZAYAN AQILA,263140701111065,Teknologi Informasi,Web Dev,Penentuan Path,,,MYISHA ZAYAN AQILA,75,34
+32,Trinanda Grace Tampubolon,263140700111046,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,Trinanda Grace Tampubolon,99,35
+33,PUTRI MEGA ANDINI,263140701111027,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,PUTRI MEGA ANDINI,49,36
+34,VEMYTIYA HIDAYAHTULLOH,263140707111025,Teknologi Informasi,UI/UX & PM,Raw Data (Path Utama),,,VEMYTIYA HIDAYAHTULLOH,,37
+35,Hafizha Zahwa Putri,263140701111050,Teknologi Informasi,Web Dev,Penentuan Path,,,Hafizha Zahwa Putri,62,38
+36,RISNANDA AULYA EKA PUTRI,263140707111026,Teknologi Informasi,Web Dev,Penentuan Path,"Ada 2 entri di Penentuan Path, dipakai entri pertama.",,RISNANDA AULYA EKA PUTRI,35,39
+37,LARISSA NERYS EGAFATIKA,263140700111010,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,LARISSA NERYS EGAFATIKA,76,40
+38,AHMAD MA'SUM,263140707111117,Teknologi Informasi,Mobile,Penentuan Path,,,AHMAD MA'SUM,42,41
+39,MUHAMMAD SALMAN ALFACHRI,264140807111022,Teknologi Rekayasa Perangkat Lunak,IOT,Penentuan Path,,,MUHAMMAD SALMAN ALFACHRI,53,42
+40,GHEA ANANDA NOVITA,263140701111034,Teknologi Informasi,Web Dev,Raw Data (Path Utama),,,GHEA ANANDA NOVITA,,43
+41,MH. GALANG SATRIO NAGORO,263140707111020,Teknologi Informasi,Web Dev,Penentuan Path,,,MH. GALANG SATRIO NAGORO,63,44
+42,Adrian Maulana Rahman,264140807111024,Teknologi Rekayasa Perangkat Lunak,Mobile,Penentuan Path,,,Adrian Maulana Rahman,97,45
+43,MUFIDA NURLITA AULIA,263140701111009,Teknologi Informasi,Web Dev,Penentuan Path,,,MUFIDA NURLITA AULIA,77,46
+44,LIDYA DEVI NOVIANA,263140707111130,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,LIDYA DEVI NOVIANA,48,47
+45,MUHAMMAD ERI SANDY FEBRIANO HADINATAPUTRA,263140707111049,Teknologi Informasi,IOT,Penentuan Path,,,MUHAMMAD ERI SANDY FEBRIANO HADINATAPUTRA,54,48
+46,AGUS DANIEL SIMORANGKIR,263140701111012,Teknologi Informasi,Web Dev,Raw Data (Path Utama),,,AGUS DANIEL SIMORANGKIR,,49
+47,ZAKIYAH MAS'UDAH,263140707111039,Teknologi Informasi,Web Dev,Penentuan Path,,,ZAKIYAH MAS'UDAH,64,50
+48,MA'MUN AFANDI IMADUDIN,263140701111022,Teknologi Informasi,Web Dev,Penentuan Path,,,MA'MUN AFANDI IMADUDIN (Affandi),92,51
+49,ELSHA PUTRI RAHMADANI,263140701111040,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,ELSHA PUTRI RAHMADANI,84,52
+50,KIANDRA ARYASATYA ERWIDIA,263140701111019,Teknologi Informasi,Web Dev,Penentuan Path,"Ada 2 entri di Penentuan Path, dipakai entri pertama.",,KIANDRA ARYASATYA ERWIDIA,36,53
+51,SAHFIRA NOVALINDA,263140701111020,Teknologi Informasi,Web Dev,Penentuan Path,,,SAHFIRA NOVALINDA,55,54
+52,M. RIDHO ALFARIDZI NASUTION,263140700111027,Teknologi Informasi,Mobile,Penentuan Path,,,M. RIDHO ALFARIDZI NASUTION,66,56
+53,NAZWA LENDRA PUTRI,263140701111029,Teknologi Informasi,Web Dev,Penentuan Path,,,NAZWA LENDRA PUTRI,93,57
+54,DIANDRA MAHARANI,263140700111007,Teknologi Informasi,Web Dev,Penentuan Path,,,DIANDRA MAHARANI,78,58
+55,MARGARETH THERESIA ROTUA SIMANUNGKALIT,263140700111039,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,MARGARETH THERESIA ROTUA SIMANUNGKALIT,40,59
+56,Pandu Renoto Widi Kusumo,263140700111021,Teknologi Informasi,Mobile,Penentuan Path,,,Pandu Renoto Widi Kusumo,67,60
+57,Noer Syifa Sugiyanto,263140700111035,Teknologi Informasi,IOT,Raw Data (Path Utama),,,Noer Syifa Sugiyanto,,61
+58,REVANDRA AHZA RIZKIA,253140700111036,Teknologi Informasi,Game Dev,Penentuan Path,,,REVANDRA AHZA RIZKIA,52,62
+59,SULTAN RASSYA WICAKSANA,264140807111027,Teknologi Rekayasa Perangkat Lunak,Mobile,Penentuan Path,,,SULTAN RASSYA WICAKSANA,98,63
+60,LAURA ELVINA SAFIRA RAMADANI,263140701111033,Teknologi Informasi,IOT,Penentuan Path,,,LAURA ELVINA SAFIRA RAMADANI,88,64
+61,Salsah Ramadhani,263140701111024,Teknologi Informasi,UI/UX & PM,Raw Data (Path Utama),,,Salsah Ramadhani,,65
+62,Naila Putri Sahiro,263140700111049,Teknologi Informasi,UI/UX & PM,Penentuan Path,"Ada 2 entri di Penentuan Path, dipakai entri pertama.",,Naila Putri Sahiro,12,66
+63,NIAMIKA AL KHOIRIYA PUTRI YASIN,263140707111036,Teknologi Informasi,UI/UX & PM,Raw Data (Path Utama),,,NIAMIKA AL KHOIRIYA PUTRI YASIN,,67
+64,Faiz Ramadhan,263140700111030,Teknologi Informasi,Web Dev,Penentuan Path,,,Faiz Ramadhan,65,68
+65,RIRIS SAFRILLA,263140707111123,Teknologi Informasi,Web Dev,Penentuan Path,,,RIRIS SAFRILLA,94,69
+66,Dylan Leonaldo Pratama,264140807111037,Teknologi Rekayasa Perangkat Lunak,UI/UX & PM,Raw Data (Path Utama),,,Dylan Leonaldo Pratama,,70
+67,Toriqul irfani barda,263140707111136,Teknologi Informasi,Web Dev,Penentuan Path,,,Toriqul irfani barda,37,71
+68,ELVARETTA DWI ARISTAWATI,263140701111052,Teknologi Informasi,Mobile,Raw Data (Path Utama),,,ELVARETTA DWI ARISTAWATI,,73
+69,ALFA FATIMATUZAHRO',253140701111043,Teknologi Informasi,IOT,Penentuan Path,,,ALFA FATIMATUZAHRO',89,74
+70,ZAFIRA ATA HAYAKANA,263140707111037,Teknologi Informasi,IOT,Penentuan Path,"Nama ganda di daftar lolos, cek. NIM kembar, cek.",,ZAFIRA ATA HAYAKANA,104,75
+71,Asilah Fadya Aufa,263140707111034,Teknologi Informasi,UI/UX & PM,Raw Data (Path Utama),,,Asilah Fadya Aufa,,76
+72,Nadhif Farras Hanidhio,263140707111115,Teknologi Informasi,Web Dev,Penentuan Path,,,Nadhif Farras Hanidhio,38,77
+73,DHIA PUTRI ZAAFARANI,263140701111031,Teknologi Informasi,Web Dev,Penentuan Path,,,DHIA PUTRI ZAAFARANI,50,78
+74,FADHIL HASAN YUNA,26314070711126,Teknologi Informasi,IOT,Raw Data (Path Utama),"NIM tidak 15 digit, cek.",,FADHIL HASAN YUNA,,80
+75,Muhammad Rafa Al Qudsiya,264140807111032,Teknologi Rekayasa Perangkat Lunak,Web Dev,Penentuan Path,,,Rafa,82,81
+76,Dava Ari Ardiansyah,263140707111064,Teknologi Informasi,Web Dev,Penentuan Path,,,Dava Ari Ardiansyah,90,82
+77,ADITIYA DWI PARAMITA A,263140701111045,Teknologi Informasi,Web Dev,Raw Data (Path Utama),,,ADITIYA DWI PARAMITA A,,83
+78,Sahid Paramarta,263140707111088,Teknologi Informasi,IOT,Penentuan Path,,,Sahid Paramarta,79,84
+79,Achmad Mu'ammar Kadafi Rochim,263140701111070,Teknologi Informasi,Game Dev,Raw Data (Path Utama),,,Achmad Mu'ammar Kadafi Rochim,,86
+80,MOHAMMAD NOOR LATIF,263140701111030,Teknologi Informasi,IOT,Penentuan Path,,,MOHAMMAD NOOR LATIF,25,87
+81,MOCHAVY AMADEO ALGHIFARI,263140700111054,Teknologi Informasi,Web Dev,Penentuan Path,,,MOCHAVY AMADEO ALGHIFARI,95,88
+82,ABDILLAH TSAQIF ALFA ROSSY,263140707111135,Teknologi Informasi,Web Dev,Penentuan Path,,,ABDILLAH TSAQIF ALFA ROSSY,8,89
+83,BINTANG BANGKIT SUBANDI,263140707111006,Teknologi Informasi,Web Dev,Penentuan Path,,,BINTANG BANGKIT SUBANDI,7,90
+84,MAURA VIRGINIA ALFAREZA,263140701111001,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,Maura Virginia Alfa Reza,27,91
+85,Muhammad Rifki Firdaus,263140700111019,Teknologi Informasi,Game Dev,Raw Data (Path Utama),,,Muhammad Rifki Firdaus,,93
+86,MUHAMAD IQBAL,263140700111036,Teknologi Informasi,Web Dev,Penentuan Path,,,MUHAMAD IQBAL,23,94
+87,Hasan,263140700111044,Teknologi Informasi,Game Dev,Raw Data (Path Utama),,,Hasan,,95
+88,MUHAMMAD SURYA FADILLAH,263140707111108,Teknologi Informasi,IOT,Penentuan Path,,,MUHAMMAD SURYA FADILLAH,80,96
+89,RAFIFAH NADIA PURNAWARMAN,263140707111071,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,Rofifah Nadia Purnawarman,26,97
+90,ANDRA MAULIYA FATIMATUS ZAHRA,263140707111103,Teknologi Informasi,Web Dev,Raw Data (Path Utama),,,ANDRA MAULIYA FATIMATUS ZAHRA,,98
+91,MOCHAMMAD AL MIZAN YA HAFIDL,253140701111026,Teknologi Informasi,Mobile,Penentuan Path,,,MOCHAMMAD AL MIZAN YA HAFIDL,9,99
+92,DEWI ROHILATUS SA ADAH,264140807111031,Teknologi Rekayasa Perangkat Lunak,Game Dev,Penentuan Path,,,DEWI ROHILATUS SA ADAH,102,100
+93,SHINTA JULIANA,263140707111053,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,SHINTA JULIANA,85,101
+94,Naisha Neva Aolita,263140707111059,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,Naisha Neva Aolita,13,102
+95,Tamar Septian Sitompul,264140807111008,Teknologi Rekayasa Perangkat Lunak,Game Dev,Penentuan Path,,,Tamar Septian Sitompul,21,103
+96,Verdina Ananda Putri,263140701111060,Teknologi Informasi,Web Dev,Penentuan Path,,,Verdina Ananda Putri,96,104
+97,JIHAN BERLIAN NASYWA AQIILAH,263140701111011,Teknologi Informasi,Web Dev,Raw Data (Path Utama),,,JIHAN BERLIAN NASYWA AQIILAH,,105
+98,Stephani Tabita Br Silitonga,263140701111035,Teknologi Informasi,Web Dev,Penentuan Path,"Ada 2 entri di Penentuan Path, dipakai entri pertama.",,Stephani Tabita Br Silitonga,81,107
+99,Mohammad Faiz Al Farizi,264140807111010,Teknologi Rekayasa Perangkat Lunak,Mobile,Penentuan Path,,,Mohammad Faiz Al Farizi,19,110
+100,Qodhri Al Azhar Hidayatullah,263140707111069,Teknologi Informasi,Web Dev,Raw Data (Path Utama),,,Qodhri Al Azhar Hidayatullah,,111
+101,Emir Rafael Hermawan,264140807111004,Teknologi Rekayasa Perangkat Lunak,Game Dev,Raw Data (Path Utama),,,Emir Rafael Hermawan,,112
+102,SHEFIRA RAHMAYUNI KHOIRUNNISA,263140707111121,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,SHEFIRA RAHMAYUNI KHOIRUNNISA,30,113
+103,KHULUDIA DELAVITA YUNIAR SANTI,263140701111059,Teknologi Informasi,Web Dev,Penentuan Path,,,Kuludya Delavita Yuniarsangsih,28,114
+104,Maulana Majid Wijaya,263140700111020,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,Maulana Majid Wijaya,14,115
+105,GHATHFAN ABDUH,263140707111037,Teknologi Informasi,UI/UX & PM,Raw Data (Path Utama),"NIM kembar, cek.",,GHATHFAN ABDUH,,116
+106,Athailla Azrial Abbas,263140707111110,Teknologi Informasi,Game Dev,Penentuan Path,,,Athailla Azrial Abbas,103,117
+107,ZAFIRA ATA HAYAKANA,263140707111041,Teknologi Informasi,IOT,Penentuan Path,"Nama ganda di daftar lolos, cek.",,ZAFIRA ATA HAYAKANA,104,75
+108,Maulidina Zairah,263140700111034,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,Maulidina Zairah,87,120
+109,M Ikhsan Panusunan Nasution,253140707111064,Teknologi Informasi,IOT,Penentuan Path,,,M Ikhsan Panusunan Nasution,20,121
+110,HAURA RIFKI,263140707111013,Teknologi Informasi,Web Dev,Penentuan Path,,,HAURA RIFKI,22,122
+111,CHRISTIAN AUDREY ALBERTINO,263140701111075,Teknologi Informasi,Web Dev,Raw Data (Path Utama),,,CHRISTIAN AUDREY ALBERTINO,,123
+112,Panji Badar Alam,263140707111016,Teknologi Informasi,Web Dev,Penentuan Path,,,Panji Badhar Alam,29,124
+113,FA MOZZA SUKOCO,263140701111067,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,FA MOZZA SUKOCO,18,125
+114,Dharma Bektiasdi,263140707111065,Teknologi Informasi,Web Dev,Penentuan Path,,,Dharma Bektiasdi,24,127
+115,Kifayatus Sa'diyah Taufik,263140700111002,Teknologi Informasi,UI/UX & PM,Penentuan Path,,,Kifayatus Sa'diyah Taufik,100,8
