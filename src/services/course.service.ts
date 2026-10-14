@@ -32,8 +32,17 @@ const detailInclude = {
   _count: { select: { enrollments: true } },
 };
 
-export const courseService = {
-  async list(query: ListQuery) {
+/* eslint-disable @typescript-eslint/no-explicit-any */
+function shapeCourse(course: any) {
+  const { tags, _count, ...rest } = course;
+  return {
+    ...rest,
+    tags: (tags ?? []).map((item: { tag: unknown }) => item.tag),
+    studentCount: _count?.enrollments ?? 0,
+  };
+}
+
+export const courseService = {  async list(query: ListQuery) {
     const { page, perPage, skip, take } = getPagination(query);
 
     const where = {
@@ -78,17 +87,16 @@ export const courseService = {
       include: detailInclude,
     });
     if (!course) throw ApiError.notFound("Course tidak ditemukan");
+    return shapeCourse(course);
+  },
 
-    const { tags, _count, parts, ...rest } = course;
-    return {
-      ...rest,
-      tags: tags.map((t) => t.tag),
-      studentCount: _count.enrollments,
-      parts: parts.map((part) => ({
-        ...part,
-        silabusParts: part.silabusParts,
-      })),
-    };
+  async getBySlug(slug: string) {
+    const course = await prisma.course.findUnique({
+      where: { slug },
+      include: detailInclude,
+    });
+    if (!course) throw ApiError.notFound("Course tidak ditemukan");
+    return shapeCourse(course);
   },
 
   async create(input: {

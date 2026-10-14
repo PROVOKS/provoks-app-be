@@ -15,6 +15,11 @@ export const courseController = {
     res.json({ success: true, message: "OK", data });
   }),
 
+  detailBySlug: asyncHandler(async (req: Request, res: Response) => {
+    const data = await courseService.getBySlug(param(req, "slug"));
+    res.json({ success: true, message: "OK", data });
+  }),
+
   create: asyncHandler(async (req: Request, res: Response) => {
     const data = await courseService.create(req.body);
     res.status(201).json({ success: true, message: "Course dibuat", data });

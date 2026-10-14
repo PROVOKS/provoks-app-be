@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { z } from "zod";
 
 import { courseController } from "../controllers/course.controller";
 import { authenticate, authorize } from "../middlewares/auth";
@@ -13,6 +14,11 @@ import { idParamSchema } from "../validators/path.schema";
 export const courseRoutes = Router();
 
 courseRoutes.get("/", validate({ query: listCourseQuerySchema }), courseController.list);
+courseRoutes.get(
+  "/slug/:slug",
+  validate({ params: z.object({ slug: z.string().min(1) }) }),
+  courseController.detailBySlug,
+);
 courseRoutes.get("/:id", validate({ params: idParamSchema }), courseController.detail);
 courseRoutes.post(
   "/",
