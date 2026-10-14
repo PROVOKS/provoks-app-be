@@ -4,6 +4,7 @@ import { userController } from "../controllers/user.controller";
 import { authenticate, authorize } from "../middlewares/auth";
 import { validate } from "../middlewares/validate";
 import {
+  createUserSchema,
   importCsvSchema,
   listPathRequestQuerySchema,
   listUserQuerySchema,
@@ -21,6 +22,14 @@ userRoutes.get(
   ...staff,
   validate({ query: listUserQuerySchema }),
   userController.list,
+);
+
+/// tambah user manual (sebelum /:id supaya tidak tertangkap sebagai id)
+userRoutes.post(
+  "/",
+  ...staff,
+  validate({ body: createUserSchema }),
+  userController.create,
 );
 
 /// import siswa dari CSV (khusus role STUDENT)

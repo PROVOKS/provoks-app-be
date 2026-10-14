@@ -14,6 +14,17 @@ export const listUserQuerySchema = z.object({
   role: z.enum(["ADMIN", "INSTRUCTOR", "STUDENT", "ALL"]).optional(),
 });
 
+export const createUserSchema = z.object({
+  name: z.string().min(2, "Nama minimal 2 karakter"),
+  email: z.string().email("Format email tidak valid"),
+  role: roleEnum.default("STUDENT"),
+  nim: z.string().max(30).optional(),
+  prodi: z.string().max(120).optional(),
+  password: z.string().min(6, "Password minimal 6 karakter").optional().or(z.literal("")),
+  /// opsional: langsung daftarkan siswa ke path (status APPROVED)
+  pathId: z.string().optional(),
+});
+
 export const updateUserSchema = z.object({
   name: z.string().min(2, "Nama minimal 2 karakter").optional(),
   email: z.string().email("Format email tidak valid").optional(),

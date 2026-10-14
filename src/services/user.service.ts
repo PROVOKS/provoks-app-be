@@ -36,6 +36,15 @@ const USER_SELECT = {
   },
 } as const;
 
+/** Prisma: pelanggaran unique constraint */
+function isUniqueViolation(error: unknown) {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    (error as { code?: string }).code === "P2002"
+  );
+}
+
 function mapUser(item: {
   id: string;
   name: string;
@@ -424,6 +433,59 @@ export const userService = {
     return paginated(items.map(mapUser), total, page, perPage);
   },
 
+  /** Tambah user manual dari halaman Manajemen User */
+  async create(payload: Record<string, unknown>) {
+    const role = String(payload.role ?? "STUDENT");
+    const email = String(payload.email ?? "").trim().toLowerCase();
+    const nim = String(payload.nim ?? "").trim() || null;
+    const prodi = String(payload.prodi ?? "").trim() || null;
+
+    const inputPassword = String(payload.password ?? "").trim();
+    // siswa: kalau password dikosongkan, pakai NIM (sama seperti import CSV)
+    const password = inputPassword || (role === "STUDENT" && nim ? nim : "");
+    if (!password) throw ApiError.badRequest("Password wajib diisi");
+    if (password.length < 6) {
+      throw ApiError.badRequest("Password minimal 6 karakter");
+    }
+
+    try {
+      const created = await prisma.user.create({
+        data: {
+          name: String(payload.name ?? "").trim(),
+          email,
+          password: await hash(password, 10),
+          role: role as never,
+          nim,
+          prodi,
+        },
+        select: { id: true },
+      });
+
+      const pathId = String(payload.pathId ?? "").trim();
+      if (role === "STUDENT" && pathId) {
+        await prisma.pathEnrollment.create({
+          data: {
+            userId: created.id,
+            pathId,
+            status: "APPROVED",
+            note: "Dibuat manual dari Manajemen User",
+          },
+        });
+      }
+
+      const user = await prisma.user.findUniqueOrThrow({
+        where: { id: created.id },
+        select: USER_SELECT,
+      });
+      return mapUser(user);
+    } catch (error) {
+      if (isUniqueViolation(error)) {
+        throw ApiError.badRequest("Email atau NIM sudah dipakai user lain");
+      }
+      throw error;
+    }
+  },
+
   /** Update data user (password opsional) */
   async update(id: string, payload: Record<string, unknown>) {
     const user = await prisma.user.findUnique({ where: { id } });
@@ -445,11 +507,7 @@ export const userService = {
       });
       return mapUser(updated);
     } catch (error) {
-      if (
-        typeof error === "object" &&
-        error !== null &&
-        (error as { code?: string }).code === "P2002"
-      ) {
+      if (isUniqueViolation(error)) {
         throw ApiError.badRequest("Email atau NIM sudah dipakai user lain");
       }
       throw error;

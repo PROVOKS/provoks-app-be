@@ -10,6 +10,11 @@ export const userController = {
     res.json({ success: true, message: "OK", data });
   }),
 
+  create: asyncHandler(async (req: Request, res: Response) => {
+    const data = await userService.create(req.body);
+    res.status(201).json({ success: true, message: "User ditambahkan", data });
+  }),
+
   update: asyncHandler(async (req: Request, res: Response) => {
     const data = await userService.update(param(req, "id"), req.body);
     res.json({ success: true, message: "User diperbarui", data });
