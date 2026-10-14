@@ -40,8 +40,21 @@ npm install
 cp .env.example .env      # sesuaikan DATABASE_URL
 npm run db:up             # jalankan PostgreSQL via Docker
 npm run prisma:migrate    # buat tabel
+npm run prisma:seed       # isi data awal (user + katalog contoh)
 npm run dev               # http://localhost:4000/api/v1
 ```
+
+### Akun hasil seed
+
+| Role | Email | Password |
+| --- | --- | --- |
+| ADMIN | `admin@provoks.id` | `secret123` |
+| INSTRUCTOR | `rina@provoks.id` | `secret123` |
+| STUDENT | `andi@provoks.id` | `secret123` |
+
+Seed juga mengisi 4 path, 8 tag, dan 1 course contoh
+(`Full-Stack Web Development`) lengkap dengan course parts, silabus parts,
+content blocks, dan soal quiz. Script-nya idempotent — aman dijalankan ulang.
 
 ## Scripts
 
@@ -53,6 +66,7 @@ npm run dev               # http://localhost:4000/api/v1
 | `npm run typecheck` | cek tipe tanpa emit |
 | `npm run db:up` / `db:down` | Docker Compose Postgres |
 | `npm run prisma:migrate` | migrasi database |
+| `npm run prisma:seed` | isi data awal (admin + katalog contoh) |
 | `npm run prisma:studio` | Prisma Studio |
 
 ## Endpoint
