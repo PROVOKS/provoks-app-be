@@ -47,6 +47,7 @@ enum BlockType {
   QUIZ
   PDF
   SLIDES
+  FILE
 }
 
 // ---------- auth ----------

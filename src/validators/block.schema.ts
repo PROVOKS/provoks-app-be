@@ -11,6 +11,7 @@ export const blockTypeEnum = z.enum([
   "QUIZ",
   "PDF",
   "SLIDES",
+  "FILE",
 ]);
 
 export const createBlockSchema = z.object({
