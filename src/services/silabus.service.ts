@@ -29,6 +29,18 @@ export const silabusService = {
     return { id };
   },
 
+  async reorderCourseParts(items: { id: string; order: number }[]) {
+    await prisma.$transaction(
+      items.map((item) =>
+        prisma.coursePart.update({
+          where: { id: item.id },
+          data: { order: item.order },
+        }),
+      ),
+    );
+    return { updated: items.length };
+  },
+
   // ---------- silabus_parts ----------
   async createSilabusPart(input: {
     coursePartId: string;

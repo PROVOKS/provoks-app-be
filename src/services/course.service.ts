@@ -20,7 +20,12 @@ const detailInclude = {
     include: {
       silabusParts: {
         orderBy: { order: "asc" as const },
-        include: { blocks: { orderBy: { order: "asc" as const } } },
+        include: {
+          blocks: {
+            orderBy: { order: "asc" as const },
+            include: { questions: { orderBy: { order: "asc" as const } } },
+          },
+        },
       },
     },
   },

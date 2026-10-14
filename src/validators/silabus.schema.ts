@@ -42,3 +42,5 @@ export const reorderSchema = z.object({
     z.object({ id: z.string().min(1), order: z.coerce.number().min(0) }),
   ),
 });
+
+export const reorderCoursePartsSchema = reorderSchema;

@@ -20,6 +20,11 @@ export const silabusController = {
     res.json({ success: true, message: "Course part dihapus", data });
   }),
 
+  reorderCourseParts: asyncHandler(async (req: Request, res: Response) => {
+    const data = await silabusService.reorderCourseParts(req.body.items);
+    res.json({ success: true, message: "Urutan course part diperbarui", data });
+  }),
+
   createSilabusPart: asyncHandler(async (req: Request, res: Response) => {
     const data = await silabusService.createSilabusPart(req.body);
     res.status(201).json({ success: true, message: "Silabus part dibuat", data });

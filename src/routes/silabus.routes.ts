@@ -7,6 +7,7 @@ import { idParamSchema } from "../validators/path.schema";
 import {
   createCoursePartSchema,
   createSilabusPartSchema,
+  reorderCoursePartsSchema,
   reorderSchema,
   updateCoursePartSchema,
   updateSilabusPartSchema,
@@ -17,6 +18,12 @@ export const silabusRoutes = Router();
 const staff = [authenticate, authorize("ADMIN", "INSTRUCTOR")] as const;
 
 // course_parts
+silabusRoutes.put(
+  "/course-parts/reorder",
+  ...staff,
+  validate({ body: reorderCoursePartsSchema }),
+  silabusController.reorderCourseParts,
+);
 silabusRoutes.post(
   "/course-parts",
   ...staff,
