@@ -9,6 +9,8 @@ export const blockTypeEnum = z.enum([
   "CODE",
   "CALLOUT",
   "QUIZ",
+  "PDF",
+  "SLIDES",
 ]);
 
 export const createBlockSchema = z.object({

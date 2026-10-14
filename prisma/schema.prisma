@@ -45,6 +45,8 @@ enum BlockType {
   CODE
   CALLOUT
   QUIZ
+  PDF
+  SLIDES
 }
 
 // ---------- auth ----------
@@ -61,6 +63,7 @@ model User {
 
   enrollments Enrollment[]
   progress    SilabusProgress[]
+  quizAttempts QuizAttempt[]
 }
 
 // ---------- katalog ----------
@@ -171,6 +174,7 @@ model ContentBlock {
 
   silabusPart SilabusPart    @relation(fields: [silabusPartId], references: [id], onDelete: Cascade)
   questions   QuizQuestion[]
+  attempts    QuizAttempt[]
 
   @@index([silabusPartId])
 }
@@ -216,4 +220,22 @@ model SilabusProgress {
   silabusPart SilabusPart @relation(fields: [silabusPartId], references: [id], onDelete: Cascade)
 
   @@unique([userId, silabusPartId])
+}
+
+/// hasil pengerjaan kuis oleh siswa
+model QuizAttempt {
+  id             String   @id @default(cuid())
+  userId         String
+  contentBlockId String
+  /// { "<questionId>": optionIndex }
+  answers        Json
+  score          Int
+  totalPoints    Int
+  passed         Boolean  @default(false)
+  submittedAt    DateTime @default(now())
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contentBlock ContentBlock @relation(fields: [contentBlockId], references: [id], onDelete: Cascade)
+
+  @@index([userId, contentBlockId])
 }
