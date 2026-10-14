@@ -8,7 +8,7 @@ type ListQuery = {
   perPage?: number;
   search?: string;
   status?: "DRAFT" | "PUBLISHED" | "ARCHIVED";
-  level?: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
+  isFastTrack?: boolean;
 };
 
 export const pathService = {
@@ -17,7 +17,9 @@ export const pathService = {
 
     const where = {
       ...(query.status ? { status: query.status } : {}),
-      ...(query.level ? { level: query.level } : {}),
+      ...(query.isFastTrack !== undefined
+        ? { isFastTrack: query.isFastTrack }
+        : {}),
       ...(query.search
         ? { name: { contains: query.search, mode: "insensitive" as const } }
         : {}),
@@ -62,7 +64,7 @@ export const pathService = {
     name: string;
     slug?: string;
     description?: string;
-    level?: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
+    isFastTrack?: boolean;
     status?: "DRAFT" | "PUBLISHED" | "ARCHIVED";
   }) {
     const slug = input.slug ?? slugify(input.name);

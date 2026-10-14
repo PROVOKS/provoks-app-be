@@ -24,12 +24,6 @@ enum PublishStatus {
   ARCHIVED
 }
 
-enum PathLevel {
-  BEGINNER
-  INTERMEDIATE
-  ADVANCED
-}
-
 enum SilabusType {
   VIDEO
   ARTICLE
@@ -74,7 +68,8 @@ model Path {
   name        String
   slug        String        @unique
   description String?
-  level       PathLevel     @default(BEGINNER)
+  /// false = Reguler, true = Fast Track
+  isFastTrack Boolean       @default(false)
   status      PublishStatus @default(DRAFT)
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt

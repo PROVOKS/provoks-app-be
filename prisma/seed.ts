@@ -30,10 +30,10 @@ const USERS = [
 // Sample katalog
 // ============================================================
 const PATHS = [
-  { name: "Frontend Development", level: "BEGINNER" as const },
-  { name: "Backend Development", level: "INTERMEDIATE" as const },
-  { name: "Full-Stack Development", level: "ADVANCED" as const },
-  { name: "UI/UX Design", level: "BEGINNER" as const },
+  { name: "Frontend Development", isFastTrack: false },
+  { name: "Backend Development", isFastTrack: false },
+  { name: "Full-Stack Development", isFastTrack: true },
+  { name: "UI/UX Design", isFastTrack: false },
 ];
 
 const TAGS = [
@@ -78,11 +78,11 @@ async function seedPaths() {
   for (const item of PATHS) {
     const path = await prisma.path.upsert({
       where: { slug: slugify(item.name) },
-      update: { name: item.name, level: item.level },
+      update: { name: item.name, isFastTrack: item.isFastTrack },
       create: {
         name: item.name,
         slug: slugify(item.name),
-        level: item.level,
+        isFastTrack: item.isFastTrack,
         status: "PUBLISHED",
         description: `Learning path ${item.name}.`,
       },
