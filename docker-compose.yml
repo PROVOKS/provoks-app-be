@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: provoks-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: provoks
+      POSTGRES_PASSWORD: provoks
+      POSTGRES_DB: provoks_lms
+    ports:
+      - "5432:5432"
+    volumes:
+      - provoks-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U provoks -d provoks_lms"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  provoks-pgdata:

@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.env
+.env.local
+*.log
+coverage/
+.DS_Store
+
+# Prisma generated client (regenerate: npx prisma generate)
+src/generated/
+
+# Prisma agent skills (regenerate with: npx prisma skills sync)
+.agents/
+.claude/
+.windsurf/
+skills-lock.json

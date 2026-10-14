@@ -1,0 +1,219 @@
+// Provoks LMS — Prisma schema
+// Struktur konten: course → course_parts → silabus_parts → content_blocks (+ quiz_questions)
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------- enums ----------
+
+enum Role {
+  ADMIN
+  INSTRUCTOR
+  STUDENT
+}
+
+enum PublishStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum PathLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum SilabusType {
+  VIDEO
+  ARTICLE
+  QUIZ
+}
+
+enum BlockType {
+  HEADING
+  PARAGRAPH
+  IMAGE
+  DIVIDER
+  VIDEO
+  CODE
+  CALLOUT
+  QUIZ
+}
+
+// ---------- auth ----------
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(STUDENT)
+  avatarUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  enrollments Enrollment[]
+  progress    SilabusProgress[]
+}
+
+// ---------- katalog ----------
+
+model Path {
+  id          String        @id @default(cuid())
+  name        String
+  slug        String        @unique
+  description String?
+  level       PathLevel     @default(BEGINNER)
+  status      PublishStatus @default(DRAFT)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  courses Course[]
+}
+
+model Tag {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  slug      String   @unique
+  category  String?
+  createdAt DateTime @default(now())
+
+  courses CourseTag[]
+}
+
+// ---------- course ----------
+
+model Course {
+  id           String        @id @default(cuid())
+  title        String
+  slug         String        @unique
+  description  String?
+  thumbnailUrl String?
+  status       PublishStatus @default(DRAFT)
+  /// nilai minimum lulus — milik COURSE (bukan silabus part)
+  passingGrade Int           @default(70)
+  pathId       String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  path        Path?         @relation(fields: [pathId], references: [id], onDelete: SetNull)
+  tags        CourseTag[]
+  parts       CoursePart[]
+  enrollments Enrollment[]
+}
+
+model CourseTag {
+  courseId String
+  tagId    String
+
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([courseId, tagId])
+  @@index([tagId])
+}
+
+/// course_parts — grup besar (Getting Started, React Fundamentals, ...)
+model CoursePart {
+  id              String   @id @default(cuid())
+  courseId        String
+  name            String
+  description     String?
+  durationMinutes Int      @default(0)
+  order           Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  course       Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  silabusParts SilabusPart[]
+
+  @@index([courseId])
+}
+
+/// silabus_parts — item di dalam course_silabus
+model SilabusPart {
+  id              String        @id @default(cuid())
+  coursePartId    String
+  title           String
+  slug            String
+  type            SilabusType   @default(VIDEO)
+  durationMinutes Int           @default(0)
+  status          PublishStatus @default(DRAFT)
+  order           Int           @default(0)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  coursePart CoursePart       @relation(fields: [coursePartId], references: [id], onDelete: Cascade)
+  blocks     ContentBlock[]
+  progress   SilabusProgress[]
+
+  @@unique([coursePartId, slug])
+  @@index([coursePartId])
+}
+
+/// content_blocks — isi dinamis per silabus part
+model ContentBlock {
+  id            String    @id @default(cuid())
+  silabusPartId String
+  type          BlockType
+  order         Int       @default(0)
+  /// payload fleksibel per tipe block (heading text, url video, code, dll)
+  content       Json
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  silabusPart SilabusPart    @relation(fields: [silabusPartId], references: [id], onDelete: Cascade)
+  questions   QuizQuestion[]
+
+  @@index([silabusPartId])
+}
+
+model QuizQuestion {
+  id             String @id @default(cuid())
+  contentBlockId String
+  question       String
+  /// array opsi jawaban
+  options        Json
+  answerIndex    Int
+  points         Int    @default(1)
+  order          Int    @default(0)
+
+  contentBlock ContentBlock @relation(fields: [contentBlockId], references: [id], onDelete: Cascade)
+
+  @@index([contentBlockId])
+}
+
+// ---------- progres belajar ----------
+
+model Enrollment {
+  id              String   @id @default(cuid())
+  userId          String
+  courseId        String
+  progressPercent Int      @default(0)
+  enrolledAt      DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+}
+
+model SilabusProgress {
+  id            String    @id @default(cuid())
+  userId        String
+  silabusPartId String
+  completed     Boolean   @default(false)
+  completedAt   DateTime?
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  silabusPart SilabusPart @relation(fields: [silabusPartId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, silabusPartId])
+}
