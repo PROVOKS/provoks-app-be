@@ -79,6 +79,43 @@ const PATH_SLUGS = {
   Mobile: "mobile",
 };
 
+// ---- email asli dari with_email.csv (dicocokkan lewat NIM, cadangan nama) ----
+const withEmailRows = parseCsv(readFileSync(join(root, "with_email.csv"), "utf8"));
+const withHeader = withEmailRows[0].map((h) => h.trim());
+const colNama = withHeader.indexOf("Nama Lengkap");
+const colNim = withHeader.indexOf("NIM");
+const colEmail = withHeader.indexOf("Email Aktif");
+
+/** "026314070711126" == "26314070711126" (leading zero diabaikan) */
+function nimKey(value) {
+  return String(value).replace(/\D/g, "").replace(/^0+/, "");
+}
+
+/** "RENI ANDRIANI" == "Reni Andriani" */
+function nameKey(value) {
+  return String(value).toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+const emailByNim = new Map();
+const emailByName = new Map();
+for (const row of withEmailRows.slice(1)) {
+  const email = (row[colEmail] ?? "").trim().toLowerCase();
+  if (!email) continue;
+  const nim = nimKey((row[colNim] ?? "").trim());
+  const nama = nameKey((row[colNama] ?? "").trim());
+  if (nim && !emailByNim.has(nim)) emailByNim.set(nim, email);
+  if (nama && !emailByName.has(nama)) emailByName.set(nama, email);
+}
+
+/** Email asli; kalau tidak ketemu dipakai email bawaan kampus. */
+function lookupEmail(nim, nama) {
+  return (
+    emailByNim.get(nimKey(nim)) ??
+    emailByName.get(nameKey(nama)) ??
+    `${nim}@student.provoks.id`
+  );
+}
+
 const source = readFileSync(join(root, "students.csv"), "utf8");
 const rows = parseCsv(source);
 
@@ -150,10 +187,15 @@ for (const item of parsed) {
   const pathSlug = PATH_SLUGS[item.path];
   if (!pathSlug) flags.push(`Path "${item.path}" tidak dikenali`);
 
+  const email = lookupEmail(nim, item.name);
+  if (email.endsWith("@student.provoks.id")) {
+    flags.push("Email asli tidak ditemukan di with_email.csv");
+  }
+
   output.push({
     nama: item.name,
     nim,
-    email: `${nim}@student.provoks.id`,
+    email,
     prodi: item.prodi,
     path: item.path,
     path_slug: pathSlug ?? "",

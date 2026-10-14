@@ -327,32 +327,40 @@ export const userService = {
       }
 
       try {
-        const password = await hash(row.nim, 10);
+        // Dicocokkan lewat NIM dulu (nim unik), baru email. Dengan begitu
+        // import ulang bisa memperbarui email tanpa membuat akun duplikat.
         const existing = await prisma.user.findFirst({
           where: { OR: [{ nim: row.nim }, { email: row.email }] },
           select: { id: true },
         });
 
-        const user = await prisma.user.upsert({
-          where: { email: row.email },
-          update: {
-            name: row.nama,
-            nim: row.nim,
-            prodi: row.prodi || null,
-            role: "STUDENT",
-          },
-          create: {
-            name: row.nama,
-            email: row.email,
-            password,
-            role: "STUDENT",
-            nim: row.nim,
-            prodi: row.prodi || null,
-          },
-        });
-
-        if (existing) result.updated += 1;
-        else result.created += 1;
+        let user;
+        if (existing) {
+          user = await prisma.user.update({
+            where: { id: existing.id },
+            data: {
+              name: row.nama,
+              email: row.email,
+              nim: row.nim,
+              prodi: row.prodi || null,
+              role: "STUDENT",
+            },
+          });
+          result.updated += 1;
+        } else {
+          user = await prisma.user.create({
+            data: {
+              name: row.nama,
+              email: row.email,
+              // password awal = NIM
+              password: await hash(row.nim, 10),
+              role: "STUDENT",
+              nim: row.nim,
+              prodi: row.prodi || null,
+            },
+          });
+          result.created += 1;
+        }
 
         await prisma.pathEnrollment.upsert({
           where: { userId_pathId: { userId: user.id, pathId } },
