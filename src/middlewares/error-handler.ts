@@ -34,6 +34,17 @@ export function errorHandler(
     });
   }
 
+  // error dari multer (mis. file terlalu besar)
+  if (error instanceof Error && error.name === "MulterError") {
+    return res.status(400).json({
+      success: false,
+      message:
+        (error as Error & { code?: string }).code === "LIMIT_FILE_SIZE"
+          ? "Ukuran file melebihi batas 25MB"
+          : "Upload file gagal",
+    });
+  }
+
   const message =
     error instanceof Error ? error.message : "Terjadi kesalahan pada server";
 

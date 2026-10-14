@@ -16,6 +16,13 @@ const envSchema = z.object({
     .string()
     .default("false")
     .transform((value) => value === "true"),
+
+  // Cloudinary
+  CLOUDINARY_CLOUD_NAME: z.string().default(""),
+  CLOUDINARY_API_KEY: z.string().default(""),
+  CLOUDINARY_API_SECRET: z.string().default(""),
+  CLOUDINARY_UPLOAD_PRESET: z.string().default(""),
+  CLOUDINARY_FOLDER: z.string().default("provoks"),
 });
 
 const parsed = envSchema.safeParse(process.env);
