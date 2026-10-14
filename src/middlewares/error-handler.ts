@@ -26,6 +26,14 @@ export function errorHandler(
     });
   }
 
+  // body JSON tidak valid (dari express.json())
+  if (error instanceof SyntaxError && "body" in error) {
+    return res.status(400).json({
+      success: false,
+      message: "Body JSON tidak valid",
+    });
+  }
+
   const message =
     error instanceof Error ? error.message : "Terjadi kesalahan pada server";
 
