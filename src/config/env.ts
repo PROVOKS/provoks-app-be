@@ -11,6 +11,11 @@ const envSchema = z.object({
   DATABASE_URL: z.string().min(1, "DATABASE_URL wajib diisi"),
   JWT_SECRET: z.string().min(8, "JWT_SECRET minimal 8 karakter"),
   JWT_EXPIRES_IN: z.string().default("7d"),
+  COOKIE_NAME: z.string().default("provoks_token"),
+  COOKIE_SECURE: z
+    .string()
+    .default("false")
+    .transform((value) => value === "true"),
 });
 
 const parsed = envSchema.safeParse(process.env);

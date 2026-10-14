@@ -23,23 +23,32 @@ declare global {
   }
 }
 
+/** Ambil token dari httpOnly cookie, fallback ke header Authorization. */
+export function extractToken(req: Request): string | null {
+  const cookieToken = req.cookies?.[env.COOKIE_NAME];
+  if (typeof cookieToken === "string" && cookieToken.length > 0) {
+    return cookieToken;
+  }
+
+  const header = req.headers.authorization;
+  if (header?.startsWith("Bearer ")) return header.slice(7);
+
+  return null;
+}
+
 export const authenticate: RequestHandler = (
   req: Request,
   _res: Response,
   next: NextFunction,
 ) => {
-  const header = req.headers.authorization;
+  const token = extractToken(req);
 
-  if (!header?.startsWith("Bearer ")) {
-    return next(ApiError.unauthorized("Token tidak ditemukan"));
+  if (!token) {
+    return next(ApiError.unauthorized("Sesi tidak ditemukan"));
   }
 
   try {
-    const payload = jwt.verify(
-      header.slice(7),
-      env.JWT_SECRET,
-    ) as AuthPayload;
-    req.user = payload;
+    req.user = jwt.verify(token, env.JWT_SECRET) as AuthPayload;
     return next();
   } catch {
     return next(ApiError.unauthorized("Token tidak valid atau kedaluwarsa"));

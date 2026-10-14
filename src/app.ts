@@ -1,3 +1,4 @@
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
 import helmet from "helmet";
@@ -19,6 +20,7 @@ export function createApp() {
   );
   app.use(express.json({ limit: "2mb" }));
   app.use(express.urlencoded({ extended: true }));
+  app.use(cookieParser());
 
   app.get("/health", (_req, res) => {
     res.json({
