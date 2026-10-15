@@ -14,3 +14,9 @@ src/generated/
 .claude/
 .windsurf/
 skills-lock.json
+
+# Data siswa — berisi data pribadi (nama, NIM, email, no. WhatsApp).
+# Jangan di-commit. File tetap ada di lokal untuk scripts/normalize-students.mjs
+students.csv
+students.normalized.csv
+with_email.csv
