@@ -80,6 +80,15 @@ export const pathService = {
     if (typeof input.name === "string" && !input.slug) {
       data.slug = slugify(input.name);
     }
+
+    // slug wajib unik — beri pesan yang jelas, bukan error mentah dari Prisma
+    if (typeof data.slug === "string" && data.slug.length > 0) {
+      const taken = await prisma.path.findUnique({ where: { slug: data.slug } });
+      if (taken && taken.id !== id) {
+        throw ApiError.conflict("Slug path sudah dipakai");
+      }
+    }
+
     return prisma.path.update({ where: { id }, data });
   },
 

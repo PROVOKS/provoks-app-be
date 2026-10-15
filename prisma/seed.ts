@@ -1,6 +1,7 @@
 import { hash } from "bcryptjs";
 
 import { prisma } from "../src/db/prisma";
+import { slugify } from "../src/utils/slug";
 
 // ============================================================
 // Users
@@ -56,14 +57,6 @@ const TAGS = [
   { name: "PostgreSQL", category: "Database" },
   { name: "JavaScript", category: "Language" },
 ];
-
-function slugify(value: string) {
-  return value
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
 
 async function seedUsers() {
   for (const user of USERS) {
