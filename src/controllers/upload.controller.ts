@@ -25,6 +25,12 @@ export const uploadController = {
     });
   }),
 
+  /// tanda tangan untuk upload langsung dari browser ke Cloudinary
+  signature: asyncHandler(async (_req: Request, res: Response) => {
+    const data = uploadService.signUpload();
+    res.json({ success: true, message: "OK", data });
+  }),
+
   single: asyncHandler(async (req: Request, res: Response) => {
     if (!req.file) {
       res.status(400).json({ success: false, message: "File wajib diisi" });

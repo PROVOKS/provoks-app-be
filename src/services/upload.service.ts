@@ -24,12 +24,55 @@ export type UploadResult = {
   originalName: string;
 };
 
+/**
+ * Cloudinary menghitung tanda tangan dari parameter yang diurutkan alfabetis,
+ * digabung dengan "&", lalu API secret ditempel di belakang. Urutan di sini
+ * harus sama persis dengan urutan field yang dikirim ke Cloudinary: folder,
+ * timestamp.
+ */
+function signParams(folder: string, timestamp: number) {
+  return crypto
+    .createHash("sha1")
+    .update(`folder=${folder}&timestamp=${timestamp}${env.CLOUDINARY_API_SECRET}`)
+    .digest("hex");
+}
+
 export const uploadService = {
   isConfigured() {
     return Boolean(
       env.CLOUDINARY_CLOUD_NAME &&
         (env.CLOUDINARY_API_SECRET || env.CLOUDINARY_UPLOAD_PRESET),
     );
+  },
+
+  /**
+   * Data untuk upload langsung dari browser ke Cloudinary.
+   * Browser memakai ini supaya file tidak perlu melewati server — penting di
+   * lingkungan serverless yang membatasi ukuran body request.
+   */
+  signUpload() {
+    if (!this.isConfigured()) {
+      throw ApiError.badRequest(
+        "Cloudinary belum dikonfigurasi (isi CLOUDINARY_API_SECRET atau CLOUDINARY_UPLOAD_PRESET)",
+      );
+    }
+    if (!env.CLOUDINARY_API_SECRET) {
+      throw ApiError.badRequest(
+        "Upload langsung butuh CLOUDINARY_API_SECRET (preset unsigned tidak dipakai di jalur ini)",
+      );
+    }
+
+    const timestamp = Math.floor(Date.now() / 1000);
+
+    return {
+      cloudName: env.CLOUDINARY_CLOUD_NAME,
+      apiKey: env.CLOUDINARY_API_KEY,
+      folder: env.CLOUDINARY_FOLDER,
+      timestamp,
+      signature: signParams(env.CLOUDINARY_FOLDER, timestamp),
+      maxBytes: MAX_BYTES,
+      allowedMime: ALLOWED_MIME,
+    };
   },
 
   async upload(file: Express.Multer.File): Promise<UploadResult> {
@@ -59,16 +102,10 @@ export const uploadService = {
     if (env.CLOUDINARY_API_SECRET) {
       // signed upload
       const timestamp = Math.floor(Date.now() / 1000);
-      const signature = crypto
-        .createHash("sha1")
-        .update(
-          `folder=${env.CLOUDINARY_FOLDER}&timestamp=${timestamp}${env.CLOUDINARY_API_SECRET}`,
-        )
-        .digest("hex");
 
       form.append("api_key", env.CLOUDINARY_API_KEY);
       form.append("timestamp", String(timestamp));
-      form.append("signature", signature);
+      form.append("signature", signParams(env.CLOUDINARY_FOLDER, timestamp));
     } else {
       // unsigned upload (butuh preset "unsigned" di Cloudinary)
       form.append("upload_preset", env.CLOUDINARY_UPLOAD_PRESET);

@@ -8,7 +8,13 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 function createPrismaClient() {
-  const adapter = new PrismaPg({ connectionString: env.DATABASE_URL });
+  // Neon pooler (PgBouncer). max: 1 supaya satu instance serverless hanya
+  // memegang satu koneksi — mencegah "too many connections" saat banyak
+  // instance dibuat bersamaan.
+  const adapter = new PrismaPg({
+    connectionString: env.DATABASE_URL,
+    max: 1,
+  });
 
   return new PrismaClient({
     adapter,
@@ -16,8 +22,7 @@ function createPrismaClient() {
   });
 }
 
+// Di-cache TANPA syarat. Sebelumnya cache hanya aktif saat NODE_ENV != production,
+// jadi di serverless setiap invocation membuat pool baru dan koneksi DB habis.
 export const prisma = globalForPrisma.prisma ?? createPrismaClient();
-
-if (env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = prisma;
-}
+globalForPrisma.prisma = prisma;
