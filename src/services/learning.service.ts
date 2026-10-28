@@ -111,7 +111,22 @@ export const learningService = {
       });
       if (!pathEnrollment || pathEnrollment.status !== "APPROVED") {
         throw ApiError.forbidden(
-          "Kamu belum terdaftar di path course ini. Ajukan akses dulu ya.",
+          "Kamu belum terdaftar di path course ini. Masukkan kode akses dari admin.",
+        );
+      }
+    }
+
+    // prasyarat: course hanya terbuka setelah course "blocked by" selesai 100%
+    if (course.blockedByCourseId) {
+      const prerequisite = await prisma.enrollment.findUnique({
+        where: {
+          userId_courseId: { userId, courseId: course.blockedByCourseId },
+        },
+        select: { progressPercent: true },
+      });
+      if (!prerequisite || prerequisite.progressPercent < 100) {
+        throw ApiError.forbidden(
+          "Course ini terkunci. Selesaikan course prasyaratnya dulu.",
         );
       }
     }
@@ -232,6 +247,25 @@ export const learningService = {
 
     const courseId = item.coursePart.courseId;
 
+    // course dengan prasyarat hanya bisa dipelajari setelah prasyarat selesai
+    const course = await prisma.course.findUnique({
+      where: { id: courseId },
+      select: { blockedByCourseId: true },
+    });
+    if (course?.blockedByCourseId) {
+      const prerequisite = await prisma.enrollment.findUnique({
+        where: {
+          userId_courseId: { userId, courseId: course.blockedByCourseId },
+        },
+        select: { progressPercent: true },
+      });
+      if (!prerequisite || prerequisite.progressPercent < 100) {
+        throw ApiError.forbidden(
+          "Course ini terkunci. Selesaikan course prasyaratnya dulu.",
+        );
+      }
+    }
+
     if (completed) {
       const flat = await this.flattenItems(courseId);
       const index = flat.findIndex((entry) => entry.id === silabusPartId);
@@ -327,58 +361,91 @@ export const learningService = {
     return progressPercent;
   },
 
-  /** Daftar course yang diikuti siswa (hanya dari path yang APPROVED) */
+  /**
+   * Daftar course yang bisa diakses siswa: semua course pada path yang sudah
+   * di-join (APPROVED) + course tanpa path. Course muncul walau belum dibuka.
+   */
   async myCourses(userId: string) {
-    const enrollments = await prisma.enrollment.findMany({
+    const courses = await prisma.course.findMany({
       where: {
-        userId,
-        course: {
-          OR: [
-            { pathId: null },
-            {
-              path: {
-                pathEnrollments: { some: { userId, status: "APPROVED" } },
-              },
+        status: "PUBLISHED",
+        OR: [
+          { pathId: null },
+          {
+            path: {
+              pathEnrollments: { some: { userId, status: "APPROVED" } },
             },
-          ],
-        },
-      },
-      orderBy: { enrolledAt: "desc" },
-      include: {
-        course: {
-          include: {
-            path: true,
-            tags: { include: { tag: true } },
-            parts: { include: { silabusParts: { include: { blocks: true } } } },
           },
+        ],
+      },
+      orderBy: [{ pathId: "asc" }, { createdAt: "asc" }],
+      include: {
+        path: true,
+        tags: { include: { tag: true } },
+        parts: { include: { silabusParts: true } },
+        blockedBy: { select: { id: true, title: true, slug: true } },
+        enrollments: {
+          where: { userId },
+          select: { progressPercent: true, enrolledAt: true },
         },
       },
     });
 
-    return enrollments.map((enrollment) => {
-      const silabusCount = enrollment.course.parts.reduce(
+    // progres course prasyarat (untuk menentukan locked)
+    const prerequisiteIds = courses
+      .map((course) => course.blockedBy?.id)
+      .filter((id): id is string => Boolean(id));
+
+    const prerequisiteProgress = prerequisiteIds.length
+      ? await prisma.enrollment.findMany({
+          where: { userId, courseId: { in: prerequisiteIds } },
+          select: { courseId: true, progressPercent: true },
+        })
+      : [];
+    const progressByCourse = new Map(
+      prerequisiteProgress.map((row) => [row.courseId, row.progressPercent]),
+    );
+
+    return courses.map((course) => {
+      const silabusCount = course.parts.reduce(
         (total, part) => total + part.silabusParts.length,
         0,
       );
-      const minutes = enrollment.course.parts.reduce(
+      const minutes = course.parts.reduce(
         (total, part) =>
           total +
           part.silabusParts.reduce((sum, item) => sum + item.durationMinutes, 0),
         0,
       );
 
+      const enrollment = course.enrollments[0];
+      const prerequisiteProgressPercent = course.blockedBy
+        ? (progressByCourse.get(course.blockedBy.id) ?? 0)
+        : null;
+
       return {
-        id: enrollment.course.id,
-        title: enrollment.course.title,
-        slug: enrollment.course.slug,
-        thumbnailUrl: enrollment.course.thumbnailUrl,
-        status: enrollment.course.status,
-        path: enrollment.course.path,
-        tags: enrollment.course.tags.map((item) => item.tag),
-        progressPercent: enrollment.progressPercent,
+        id: course.id,
+        title: course.title,
+        slug: course.slug,
+        thumbnailUrl: course.thumbnailUrl,
+        status: course.status,
+        path: course.path,
+        tags: course.tags.map((item) => item.tag),
+        progressPercent: enrollment?.progressPercent ?? 0,
         silabusCount,
         durationMinutes: minutes,
-        enrolledAt: enrollment.enrolledAt,
+        enrolledAt: enrollment?.enrolledAt ?? null,
+        locked:
+          course.blockedBy !== null &&
+          (prerequisiteProgressPercent ?? 0) < 100,
+        blockedBy: course.blockedBy
+          ? {
+              id: course.blockedBy.id,
+              title: course.blockedBy.title,
+              slug: course.blockedBy.slug,
+              progressPercent: prerequisiteProgressPercent ?? 0,
+            }
+          : null,
       };
     });
   },
@@ -598,6 +665,7 @@ export const learningService = {
 
     return paths.map((path) => {
       const enrollment = path.pathEnrollments[0];
+      const approved = enrollment?.status === "APPROVED";
       return {
         id: path.id,
         name: path.name,
@@ -606,54 +674,9 @@ export const learningService = {
         isFastTrack: path.isFastTrack,
         courseCount: path._count.courses,
         status: enrollment?.status ?? null,
+        joined: approved,
         enrollmentId: enrollment?.id ?? null,
-        note: enrollment?.note ?? null,
       };
-    });
-  },
-
-  /** Ajukan masuk path (path pertama otomatis APPROVED, berikutnya butuh approval) */
-  async requestPath(userId: string, pathId: string, note?: string) {
-    const path = await prisma.path.findUnique({ where: { id: pathId } });
-    if (!path || path.status !== "PUBLISHED") {
-      throw ApiError.notFound("Path tidak ditemukan");
-    }
-
-    const existing = await prisma.pathEnrollment.findUnique({
-      where: { userId_pathId: { userId, pathId } },
-    });
-
-    if (existing) {
-      if (existing.status === "APPROVED") {
-        throw ApiError.badRequest("Kamu sudah terdaftar di path ini");
-      }
-      if (existing.status === "PENDING") {
-        throw ApiError.badRequest("Pengajuanmu masih menunggu approval");
-      }
-      // REJECTED → boleh ajukan lagi
-      return prisma.pathEnrollment.update({
-        where: { id: existing.id },
-        data: {
-          status: "PENDING",
-          note: note ?? null,
-          reviewedBy: null,
-          reviewedAt: null,
-        },
-      });
-    }
-
-    // siswa baru: path pertama langsung disetujui
-    const approvedCount = await prisma.pathEnrollment.count({
-      where: { userId, status: "APPROVED" },
-    });
-
-    return prisma.pathEnrollment.create({
-      data: {
-        userId,
-        pathId,
-        status: approvedCount === 0 ? "APPROVED" : "PENDING",
-        note: note ?? (approvedCount === 0 ? "Path pertama" : null),
-      },
     });
   },
 };

@@ -10,10 +10,19 @@ export const createCourseSchema = z.object({
   status: statusEnum.default("DRAFT"),
   passingGrade: z.coerce.number().min(0).max(100).default(70),
   pathId: z.string().optional(),
+  /// course prasyarat; kosong/null = tidak ada prasyarat
+  blockedByCourseId: z.string().optional().nullable(),
   tagIds: z.array(z.string()).optional(),
 });
 
-export const updateCourseSchema = createCourseSchema.partial();
+/**
+ * `partial()` TIDAK menghapus `.default()`, jadi tanpa override ini setiap
+ * update parsial akan menimpa status/passingGrade dengan nilai default.
+ */
+export const updateCourseSchema = createCourseSchema.partial().extend({
+  status: statusEnum.optional(),
+  passingGrade: z.coerce.number().min(0).max(100).optional(),
+});
 
 export const listCourseQuerySchema = z.object({
   page: z.coerce.number().optional(),

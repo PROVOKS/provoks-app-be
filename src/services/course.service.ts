@@ -42,6 +42,52 @@ function shapeCourse(course: any) {
   };
 }
 
+type PrereqRow = {
+  id: string;
+  pathId: string | null;
+  blockedByCourseId: string | null;
+};
+
+/**
+ * Validasi "blocked by": bukan diri sendiri, ada, satu path, dan tanpa siklus.
+ */
+async function assertValidPrerequisite(
+  courseId: string | null,
+  blockedById: string | null,
+  pathId: string | null,
+) {
+  if (!blockedById) return;
+  if (courseId && blockedById === courseId) {
+    throw ApiError.badRequest(
+      "Course tidak bisa menjadi prasyarat dirinya sendiri",
+    );
+  }
+
+  const prerequisite: PrereqRow | null = await prisma.course.findUnique({
+    where: { id: blockedById },
+    select: { id: true, pathId: true, blockedByCourseId: true },
+  });
+  if (!prerequisite) throw ApiError.notFound("Course prasyarat tidak ditemukan");
+
+  if ((prerequisite.pathId ?? null) !== (pathId ?? null)) {
+    throw ApiError.badRequest("Prasyarat harus course dari path yang sama");
+  }
+
+  let cursor: PrereqRow | null = prerequisite;
+  const seen = new Set<string>();
+  while (cursor?.blockedByCourseId) {
+    if (courseId && cursor.blockedByCourseId === courseId) {
+      throw ApiError.badRequest("Prasyarat membentuk siklus");
+    }
+    if (seen.has(cursor.blockedByCourseId)) break;
+    seen.add(cursor.blockedByCourseId);
+    cursor = await prisma.course.findUnique({
+      where: { id: cursor.blockedByCourseId },
+      select: { id: true, pathId: true, blockedByCourseId: true },
+    });
+  }
+}
+
 export const courseService = {  async list(query: ListQuery) {
     const { page, perPage, skip, take } = getPagination(query);
 
@@ -107,6 +153,7 @@ export const courseService = {  async list(query: ListQuery) {
     status?: "DRAFT" | "PUBLISHED" | "ARCHIVED";
     passingGrade?: number;
     pathId?: string;
+    blockedByCourseId?: string | null;
     tagIds?: string[];
   }) {
     const { tagIds, ...data } = input;
@@ -114,9 +161,18 @@ export const courseService = {  async list(query: ListQuery) {
     const exists = await prisma.course.findUnique({ where: { slug } });
     if (exists) throw ApiError.conflict("Slug course sudah dipakai");
 
+    if (input.blockedByCourseId) {
+      await assertValidPrerequisite(
+        null,
+        input.blockedByCourseId,
+        input.pathId ?? null,
+      );
+    }
+
     const course = await prisma.course.create({
       data: {
         ...data,
+        blockedByCourseId: input.blockedByCourseId || null,
         slug,
         tags: tagIds?.length
           ? { create: tagIds.map((tagId) => ({ tagId })) }
@@ -138,6 +194,21 @@ export const courseService = {  async list(query: ListQuery) {
 
     if (typeof input.title === "string" && !input.slug) {
       data.slug = slugify(input.title);
+    }
+
+    if ("blockedByCourseId" in input) {
+      const blockedById = (input.blockedByCourseId as string | null) || null;
+      const current = await prisma.course.findUnique({
+        where: { id },
+        select: { pathId: true },
+      });
+      const nextPathId =
+        "pathId" in input
+          ? ((input.pathId as string | null) || null)
+          : (current?.pathId ?? null);
+
+      await assertValidPrerequisite(id, blockedById, nextPathId);
+      data.blockedByCourseId = blockedById;
     }
 
     if (tagIds) {

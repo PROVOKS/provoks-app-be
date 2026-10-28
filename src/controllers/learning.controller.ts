@@ -56,13 +56,4 @@ export const learningController = {
     const data = await learningService.myPaths(req.user!.sub);
     res.json({ success: true, message: "OK", data });
   }),
-
-  requestPath: asyncHandler(async (req: Request, res: Response) => {
-    const data = await learningService.requestPath(
-      req.user!.sub,
-      req.body.pathId,
-      req.body.note,
-    );
-    res.status(201).json({ success: true, message: "Pengajuan terkirim", data });
-  }),
 };

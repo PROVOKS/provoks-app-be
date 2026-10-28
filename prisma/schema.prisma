@@ -63,6 +63,7 @@ model User {
   progress    SilabusProgress[]
   quizAttempts QuizAttempt[]
   pathEnrollments PathEnrollment[]
+  joinAttempts PathJoinAttempt[]
 }
 
 // ---------- katalog ----------
@@ -81,6 +82,7 @@ model Path {
   courses Course[]
 
   pathEnrollments PathEnrollment[]
+  joinCodes       PathJoinCode[]
 }
 
 model Tag {
@@ -112,6 +114,13 @@ model Course {
   tags        CourseTag[]
   parts       CoursePart[]
   enrollments Enrollment[]
+
+  /// prasyarat: course ini baru terbuka setelah course tersebut selesai
+  blockedByCourseId String?
+  blockedBy         Course?  @relation("CoursePrerequisite", fields: [blockedByCourseId], references: [id], onDelete: SetNull)
+  blocks            Course[] @relation("CoursePrerequisite")
+
+  @@index([blockedByCourseId])
 }
 
 /// keanggotaan siswa di sebuah path (perlu approval untuk path tambahan)
@@ -137,6 +146,37 @@ model PathEnrollment {
 
   @@unique([userId, pathId])
   @@index([status])
+}
+
+/// Kode untuk bergabung ke path. Bisa kedaluwarsa atau permanen,
+/// dan selalu bisa dicabut manual oleh admin.
+model PathJoinCode {
+  id        String    @id @default(cuid())
+  pathId    String
+  code      String    @unique
+  /// null = permanen (aktif sampai dicabut)
+  expiresAt DateTime?
+  /// null = masih aktif
+  revokedAt DateTime?
+  createdBy String?
+  createdAt DateTime  @default(now())
+
+  path Path @relation(fields: [pathId], references: [id], onDelete: Cascade)
+
+  @@index([pathId])
+}
+
+/// Percobaan memasukkan kode — dipakai untuk membatasi brute force.
+model PathJoinAttempt {
+  id        String   @id @default(cuid())
+  userId    String
+  code      String
+  success   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
 }
 
 model CourseTag {

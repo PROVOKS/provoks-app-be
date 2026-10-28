@@ -28,4 +28,8 @@ export class ApiError extends Error {
   static conflict(message = "Data sudah ada") {
     return new ApiError(409, message);
   }
+
+  static tooManyRequests(message = "Terlalu banyak percobaan, coba lagi nanti") {
+    return new ApiError(429, message);
+  }
 }

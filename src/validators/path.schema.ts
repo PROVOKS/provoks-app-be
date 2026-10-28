@@ -11,7 +11,15 @@ export const createPathSchema = z.object({
   status: statusEnum.default("DRAFT"),
 });
 
-export const updatePathSchema = createPathSchema.partial();
+/**
+ * `partial()` TIDAK menghapus `.default()`. Tanpa override ini, update parsial
+ * (mis. hanya ganti nama) akan menimpa `isFastTrack` jadi false dan `status`
+ * jadi DRAFT.
+ */
+export const updatePathSchema = createPathSchema.partial().extend({
+  isFastTrack: z.coerce.boolean().optional(),
+  status: statusEnum.optional(),
+});
 
 export const listPathQuerySchema = z.object({
   page: z.coerce.number().optional(),

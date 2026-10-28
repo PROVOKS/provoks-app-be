@@ -1,6 +1,7 @@
 import { Router } from "express";
 
 import { learningController } from "../controllers/learning.controller";
+import { pathCodeController } from "../controllers/path-code.controller";
 import { authenticate, authorize } from "../middlewares/auth";
 import { validate } from "../middlewares/validate";
 import {
@@ -10,7 +11,7 @@ import {
   submitQuizSchema,
   updateProgressSchema,
 } from "../validators/learning.schema";
-import { requestPathSchema } from "../validators/user.schema";
+import { redeemJoinCodeSchema } from "../validators/path-code.schema";
 
 export const learningRoutes = Router();
 
@@ -24,11 +25,12 @@ learningRoutes.get(
 
 learningRoutes.get("/paths", ...student, learningController.myPaths);
 
+/// gabung path pakai kode
 learningRoutes.post(
-  "/paths/request",
+  "/paths/join",
   ...student,
-  validate({ body: requestPathSchema }),
-  learningController.requestPath,
+  validate({ body: redeemJoinCodeSchema }),
+  pathCodeController.redeem,
 );
 
 learningRoutes.get(
