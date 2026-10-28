@@ -595,4 +595,60 @@ export const userService = {
       },
     });
   },
+
+  /** Aksi massal untuk user (hapus / ubah role) */
+  async bulk(
+    input: { action: "delete" | "role"; ids: string[]; role?: "ADMIN" | "INSTRUCTOR" | "STUDENT" },
+    actorId: string,
+  ) {
+    // jangan pernah menghapus akun sendiri lewat aksi massal
+    const ids = input.ids.filter((id) => id !== actorId);
+    if (ids.length === 0) {
+      throw ApiError.badRequest("Tidak ada data yang bisa diproses");
+    }
+
+    if (input.action === "role") {
+      if (!input.role) throw ApiError.badRequest("Role wajib diisi");
+      const result = await prisma.user.updateMany({
+        where: { id: { in: ids } },
+        data: { role: input.role },
+      });
+      return { affected: result.count };
+    }
+
+    // pastikan minimal satu admin tersisa
+    const adminTargets = await prisma.user.count({
+      where: { id: { in: ids }, role: "ADMIN" },
+    });
+    if (adminTargets > 0) {
+      const adminTotal = await prisma.user.count({ where: { role: "ADMIN" } });
+      if (adminTotal - adminTargets < 1) {
+        throw ApiError.badRequest("Minimal harus ada 1 admin");
+      }
+    }
+
+    const result = await prisma.user.deleteMany({ where: { id: { in: ids } } });
+    return { affected: result.count, skipped: input.ids.length - ids.length };
+  },
+
+  /** Setujui / tolak banyak permintaan path sekaligus */
+  async bulkPathRequests(
+    input: {
+      action: "APPROVED" | "REJECTED";
+      ids: string[];
+      note?: string;
+    },
+    reviewerId: string,
+  ) {
+    const result = await prisma.pathEnrollment.updateMany({
+      where: { id: { in: input.ids } },
+      data: {
+        status: input.action,
+        ...(input.note ? { note: input.note } : {}),
+        reviewedBy: reviewerId,
+        reviewedAt: new Date(),
+      },
+    });
+    return { affected: result.count };
+  },
 };

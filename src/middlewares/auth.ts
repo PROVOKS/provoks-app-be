@@ -64,3 +64,14 @@ export const authorize =
     }
     return next();
   };
+
+/**
+ * Aksi massal "delete" hanya untuk ADMIN, walau route-nya juga boleh
+ * diakses INSTRUCTOR untuk aksi lain (mis. ubah status).
+ */
+export const bulkDeleteAdminOnly: RequestHandler = (req, _res, next) => {
+  if (req.body?.action === "delete" && req.user?.role !== "ADMIN") {
+    return next(ApiError.forbidden("Hanya admin yang bisa menghapus"));
+  }
+  return next();
+};

@@ -97,4 +97,24 @@ export const pathService = {
     await prisma.path.delete({ where: { id } });
     return { id };
   },
+
+  async bulk(input: {
+    action: "delete" | "status";
+    ids: string[];
+    status?: "DRAFT" | "PUBLISHED" | "ARCHIVED";
+  }) {
+    if (input.action === "delete") {
+      const result = await prisma.path.deleteMany({
+        where: { id: { in: input.ids } },
+      });
+      return { affected: result.count };
+    }
+
+    if (!input.status) throw ApiError.badRequest("Status wajib diisi");
+    const result = await prisma.path.updateMany({
+      where: { id: { in: input.ids } },
+      data: { status: input.status },
+    });
+    return { affected: result.count };
+  },
 };

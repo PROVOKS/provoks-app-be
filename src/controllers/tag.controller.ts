@@ -29,4 +29,9 @@ export const tagController = {
     const data = await tagService.remove(param(req, "id"));
     res.json({ success: true, message: "Tag dihapus", data });
   }),
+
+  bulk: asyncHandler(async (req: Request, res: Response) => {
+    const data = await tagService.bulk(req.body);
+    res.json({ success: true, message: "Aksi massal selesai", data });
+  }),
 };

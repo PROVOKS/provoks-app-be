@@ -63,6 +63,15 @@ export const tagService = {
     if (typeof input.name === "string" && !input.slug) {
       data.slug = slugify(input.name);
     }
+
+    // slug wajib unik — beri pesan jelas, bukan error mentah Prisma
+    if (typeof data.slug === "string" && data.slug.length > 0) {
+      const taken = await prisma.tag.findUnique({ where: { slug: data.slug } });
+      if (taken && taken.id !== id) {
+        throw ApiError.conflict("Slug tag sudah dipakai");
+      }
+    }
+
     return prisma.tag.update({ where: { id }, data });
   },
 
@@ -70,5 +79,12 @@ export const tagService = {
     await this.getById(id);
     await prisma.tag.delete({ where: { id } });
     return { id };
+  },
+
+  async bulk(input: { ids: string[] }) {
+    const result = await prisma.tag.deleteMany({
+      where: { id: { in: input.ids } },
+    });
+    return { affected: result.count };
   },
 };

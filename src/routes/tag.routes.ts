@@ -1,8 +1,9 @@
 import { Router } from "express";
 
 import { tagController } from "../controllers/tag.controller";
-import { authenticate, authorize } from "../middlewares/auth";
+import { authenticate, authorize, bulkDeleteAdminOnly } from "../middlewares/auth";
 import { validate } from "../middlewares/validate";
+import { bulkTagSchema } from "../validators/bulk.schema";
 import { idParamSchema } from "../validators/path.schema";
 import {
   createTagSchema,
@@ -14,6 +15,14 @@ export const tagRoutes = Router();
 
 tagRoutes.get("/", validate({ query: listTagQuerySchema }), tagController.list);
 tagRoutes.get("/:id", validate({ params: idParamSchema }), tagController.detail);
+tagRoutes.post(
+  "/bulk",
+  authenticate,
+  authorize("ADMIN", "INSTRUCTOR"),
+  bulkDeleteAdminOnly,
+  validate({ body: bulkTagSchema }),
+  tagController.bulk,
+);
 tagRoutes.post(
   "/",
   authenticate,

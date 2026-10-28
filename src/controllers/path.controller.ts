@@ -29,4 +29,9 @@ export const pathController = {
     const data = await pathService.remove(param(req, "id"));
     res.json({ success: true, message: "Path dihapus", data });
   }),
+
+  bulk: asyncHandler(async (req: Request, res: Response) => {
+    const data = await pathService.bulk(req.body);
+    res.json({ success: true, message: "Aksi massal selesai", data });
+  }),
 };

@@ -49,4 +49,14 @@ export const userController = {
     );
     res.json({ success: true, message: "Permintaan diperbarui", data });
   }),
+
+  bulk: asyncHandler(async (req: Request, res: Response) => {
+    const data = await userService.bulk(req.body, req.user!.sub);
+    res.json({ success: true, message: "Aksi massal selesai", data });
+  }),
+
+  bulkPathRequests: asyncHandler(async (req: Request, res: Response) => {
+    const data = await userService.bulkPathRequests(req.body, req.user!.sub);
+    res.json({ success: true, message: "Permintaan diperbarui", data });
+  }),
 };

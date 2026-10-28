@@ -34,4 +34,9 @@ export const courseController = {
     const data = await courseService.remove(param(req, "id"));
     res.json({ success: true, message: "Course dihapus", data });
   }),
+
+  bulk: asyncHandler(async (req: Request, res: Response) => {
+    const data = await courseService.bulk(req.body);
+    res.json({ success: true, message: "Aksi massal selesai", data });
+  }),
 };

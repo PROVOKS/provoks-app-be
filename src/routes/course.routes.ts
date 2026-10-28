@@ -2,8 +2,9 @@ import { Router } from "express";
 import { z } from "zod";
 
 import { courseController } from "../controllers/course.controller";
-import { authenticate, authorize } from "../middlewares/auth";
+import { authenticate, authorize, bulkDeleteAdminOnly } from "../middlewares/auth";
 import { validate } from "../middlewares/validate";
+import { bulkCourseSchema } from "../validators/bulk.schema";
 import {
   createCourseSchema,
   listCourseQuerySchema,
@@ -20,6 +21,14 @@ courseRoutes.get(
   courseController.detailBySlug,
 );
 courseRoutes.get("/:id", validate({ params: idParamSchema }), courseController.detail);
+courseRoutes.post(
+  "/bulk",
+  authenticate,
+  authorize("ADMIN", "INSTRUCTOR"),
+  bulkDeleteAdminOnly,
+  validate({ body: bulkCourseSchema }),
+  courseController.bulk,
+);
 courseRoutes.post(
   "/",
   authenticate,
