@@ -1,12 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "npx prisma generate && npm run build",
-  "installCommand": "npm install",
-  "regions": ["sin1"],
-  "functions": {
-    "api/index.ts": {
-      "maxDuration": 30
-    }
-  },
-  "rewrites": [{ "source": "/(.*)", "destination": "/api" }]
+  "installCommand": "npm install --include=dev",
+  "regions": ["sin1"]
 }

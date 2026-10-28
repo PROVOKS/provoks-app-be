@@ -37,3 +37,10 @@ export function createApp() {
 
   return app;
 }
+
+/**
+ * Vercel mendeteksi file ini sebagai entry point Express (zero-config) dan
+ * membutuhkan default export. Server lokal (src/server.ts) tetap memakai
+ * createApp() supaya bisa mengatur listen + graceful shutdown sendiri.
+ */
+export default createApp();
