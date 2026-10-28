@@ -16,6 +16,9 @@ const envSchema = z.object({
     .string()
     .default("false")
     .transform((value) => value === "true"),
+  /// Domain cookie. Isi ".domainmu.id" kalau FE dan API beda subdomain,
+  /// supaya cookie terbaca juga oleh middleware di domain FE.
+  COOKIE_DOMAIN: z.string().default(""),
 
   // Cloudinary
   CLOUDINARY_CLOUD_NAME: z.string().default(""),

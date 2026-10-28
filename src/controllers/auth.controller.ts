@@ -9,6 +9,9 @@ const cookieOptions: CookieOptions = {
   secure: env.COOKIE_SECURE,
   sameSite: "lax",
   path: "/",
+  // FE dan API beda subdomain (mis. web.id vs be.web.id). Tanpa `domain`,
+  // cookie jadi host-only dan TIDAK terbaca oleh middleware di domain FE.
+  ...(env.COOKIE_DOMAIN ? { domain: env.COOKIE_DOMAIN } : {}),
   maxAge: 7 * 24 * 60 * 60 * 1000,
 };
 
