@@ -36,6 +36,13 @@ export const authController = {
     res.json({ success: true, message: "Login berhasil", data: { user } });
   }),
 
+  /// login lewat Google (ID token dari Google Identity Services)
+  google: asyncHandler(async (req: Request, res: Response) => {
+    const { user, token } = await authService.googleLogin(req.body.credential);
+    setSessionCookie(res, token);
+    res.json({ success: true, message: "Login berhasil", data: { user } });
+  }),
+
   logout: asyncHandler(async (_req: Request, res: Response) => {
     res.clearCookie(env.COOKIE_NAME, { ...cookieOptions, maxAge: undefined });
     res.json({ success: true, message: "Logout berhasil", data: null });

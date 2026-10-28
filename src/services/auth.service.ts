@@ -1,4 +1,5 @@
 import { compare, hash } from "bcryptjs";
+import { OAuth2Client } from "google-auth-library";
 import jwt from "jsonwebtoken";
 
 import { env } from "../config/env";
@@ -21,6 +22,29 @@ function signToken(user: { id: string; email: string; role: string }) {
     env.JWT_SECRET,
     { expiresIn: env.JWT_EXPIRES_IN as jwt.SignOptions["expiresIn"] },
   );
+}
+
+let googleClient: OAuth2Client | null = null;
+
+function getGoogleClient() {
+  if (!env.GOOGLE_CLIENT_ID) {
+    throw ApiError.badRequest(
+      "Login Google belum dikonfigurasi (GOOGLE_CLIENT_ID kosong)",
+    );
+  }
+  if (!googleClient) {
+    googleClient = new OAuth2Client(env.GOOGLE_CLIENT_ID);
+  }
+  return googleClient;
+}
+
+async function findPublicUser(id: string) {
+  const user = await prisma.user.findUnique({
+    where: { id },
+    select: publicUserSelect,
+  });
+  if (!user) throw ApiError.notFound("User tidak ditemukan");
+  return user;
 }
 
 export const authService = {
@@ -47,19 +71,81 @@ export const authService = {
     const user = await prisma.user.findUnique({ where: { email: input.email } });
     if (!user) throw ApiError.unauthorized("Email atau password salah");
 
+    // akun Google-only tidak punya password
+    if (!user.password) {
+      throw ApiError.unauthorized(
+        "Akun ini terdaftar lewat Google. Silakan masuk dengan Google.",
+      );
+    }
+
     const valid = await compare(input.password, user.password);
     if (!valid) throw ApiError.unauthorized("Email atau password salah");
 
-    const { password: _password, ...safeUser } = user;
-    return { user: safeUser, token: signToken(user) };
+    return { user: await findPublicUser(user.id), token: signToken(user) };
+  },
+
+  /**
+   * Login lewat Google Identity Services.
+   * - verifikasi ID token ke Google (tanda tangan, aud, exp)
+   * - `googleId` sudah ada  -> langsung masuk (role tetap)
+   * - email sudah ada       -> tautkan googleId (auto-link, role & NIM tetap)
+   * - email belum ada       -> buat user baru dengan role STUDENT
+   */
+  async googleLogin(credential: string) {
+    const client = getGoogleClient();
+
+    let payload;
+    try {
+      const ticket = await client.verifyIdToken({
+        idToken: credential,
+        audience: env.GOOGLE_CLIENT_ID,
+      });
+      payload = ticket.getPayload();
+    } catch {
+      throw ApiError.unauthorized("Token Google tidak valid atau kedaluwarsa");
+    }
+
+    if (!payload?.sub || !payload.email) {
+      throw ApiError.unauthorized("Data akun Google tidak lengkap");
+    }
+    if (!payload.email_verified) {
+      throw ApiError.unauthorized("Email Google belum terverifikasi");
+    }
+
+    const email = payload.email.toLowerCase();
+
+    let user = await prisma.user.findUnique({ where: { googleId: payload.sub } });
+
+    if (!user) {
+      const byEmail = await prisma.user.findUnique({ where: { email } });
+
+      if (byEmail) {
+        // auto-link: pertahankan role, NIM, prodi, dan password lama
+        user = await prisma.user.update({
+          where: { id: byEmail.id },
+          data: {
+            googleId: payload.sub,
+            avatarUrl: byEmail.avatarUrl ?? payload.picture ?? null,
+          },
+        });
+      } else {
+        user = await prisma.user.create({
+          data: {
+            name: payload.name?.trim() || email.split("@")[0],
+            email,
+            googleId: payload.sub,
+            password: null,
+            role: "STUDENT",
+            avatarUrl: payload.picture ?? null,
+          },
+        });
+      }
+    }
+
+    return { user: await findPublicUser(user.id), token: signToken(user) };
   },
 
   async me(userId: string) {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: publicUserSelect,
-    });
-    if (!user) throw ApiError.notFound("User tidak ditemukan");
-    return user;
+    return findPublicUser(userId);
   },
 };

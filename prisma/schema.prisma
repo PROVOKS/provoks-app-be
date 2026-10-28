@@ -50,7 +50,10 @@ model User {
   id        String   @id @default(cuid())
   name      String
   email     String   @unique
-  password  String
+  /// null = akun hanya bisa login lewat Google
+  password  String?
+  /// sub Google (unik per akun Google)
+  googleId  String?  @unique
   role      Role     @default(STUDENT)
   avatarUrl String?
   /// khusus siswa

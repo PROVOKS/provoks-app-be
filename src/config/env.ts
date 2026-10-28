@@ -12,7 +12,9 @@ const envSchema = z.object({
   JWT_SECRET: z.string().min(8, "JWT_SECRET minimal 8 karakter"),
   JWT_EXPIRES_IN: z.string().default("7d"),
   COOKIE_NAME: z.string().default("provoks_token"),
-  COOKIE_SECURE: z
+
+  /// Google OAuth (login). Kosong = fitur Google dinonaktifkan.
+  GOOGLE_CLIENT_ID: z.string().default(""),  COOKIE_SECURE: z
     .string()
     .default("false")
     .transform((value) => value === "true"),

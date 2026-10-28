@@ -12,5 +12,11 @@ export const loginSchema = z.object({
   password: z.string().min(6, "Password minimal 6 karakter"),
 });
 
+export const googleLoginSchema = z.object({
+  /// ID token (JWT) dari Google Identity Services
+  credential: z.string().min(20, "Token Google tidak valid"),
+});
+
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
+export type GoogleLoginInput = z.infer<typeof googleLoginSchema>;
