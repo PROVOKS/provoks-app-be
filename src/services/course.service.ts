@@ -152,6 +152,7 @@ export const courseService = {  async list(query: ListQuery) {
     thumbnailUrl?: string;
     status?: "DRAFT" | "PUBLISHED" | "ARCHIVED";
     passingGrade?: number;
+    isFastTrack?: boolean;
     pathId?: string;
     blockedByCourseId?: string | null;
     tagIds?: string[];

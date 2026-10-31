@@ -31,11 +31,11 @@ const USERS = [
 // Sample katalog
 // ============================================================
 const PATHS = [
-  { name: "Web Dev", isFastTrack: false },
-  { name: "UI/UX & PM", isFastTrack: false },
-  { name: "IOT", isFastTrack: false },
-  { name: "Game Dev", isFastTrack: false },
-  { name: "Mobile", isFastTrack: false },
+  { name: "Web Dev" },
+  { name: "UI/UX & PM" },
+  { name: "IOT" },
+  { name: "Game Dev" },
+  { name: "Mobile" },
 ];
 
 /// path lama dari seed versi awal (dirapikan karena sekarang pakai path dari data peserta)
@@ -80,11 +80,10 @@ async function seedPaths() {
   for (const item of PATHS) {
     const path = await prisma.path.upsert({
       where: { slug: slugify(item.name) },
-      update: { name: item.name, isFastTrack: item.isFastTrack },
+      update: { name: item.name },
       create: {
         name: item.name,
         slug: slugify(item.name),
-        isFastTrack: item.isFastTrack,
         status: "PUBLISHED",
         description: `Learning path ${item.name}.`,
       },

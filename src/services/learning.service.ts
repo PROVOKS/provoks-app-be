@@ -671,7 +671,6 @@ export const learningService = {
         name: path.name,
         slug: path.slug,
         description: path.description,
-        isFastTrack: path.isFastTrack,
         courseCount: path._count.courses,
         status: enrollment?.status ?? null,
         joined: approved,

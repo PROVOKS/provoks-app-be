@@ -553,7 +553,7 @@ export const userService = {
           user: {
             select: { id: true, name: true, email: true, nim: true, prodi: true },
           },
-          path: { select: { id: true, name: true, slug: true, isFastTrack: true } },
+          path: { select: { id: true, name: true, slug: true } },
         },
       }),
       prisma.pathEnrollment.count({ where }),

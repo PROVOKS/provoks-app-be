@@ -76,8 +76,6 @@ model Path {
   name        String
   slug        String        @unique
   description String?
-  /// false = Reguler, true = Fast Track
-  isFastTrack Boolean       @default(false)
   status      PublishStatus @default(DRAFT)
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
@@ -109,6 +107,8 @@ model Course {
   status       PublishStatus @default(DRAFT)
   /// nilai minimum lulus — milik COURSE (bukan silabus part)
   passingGrade Int           @default(70)
+  /// false = Reguler, true = Fast Track (milik course, bukan path)
+  isFastTrack  Boolean       @default(false)
   pathId       String?
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt

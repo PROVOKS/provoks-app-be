@@ -9,6 +9,8 @@ export const createCourseSchema = z.object({
   thumbnailUrl: z.string().optional(),
   status: statusEnum.default("DRAFT"),
   passingGrade: z.coerce.number().min(0).max(100).default(70),
+  /// false = Reguler, true = Fast Track
+  isFastTrack: z.coerce.boolean().default(false),
   pathId: z.string().optional(),
   /// course prasyarat; kosong/null = tidak ada prasyarat
   blockedByCourseId: z.string().optional().nullable(),
@@ -22,6 +24,7 @@ export const createCourseSchema = z.object({
 export const updateCourseSchema = createCourseSchema.partial().extend({
   status: statusEnum.optional(),
   passingGrade: z.coerce.number().min(0).max(100).optional(),
+  isFastTrack: z.coerce.boolean().optional(),
 });
 
 export const listCourseQuerySchema = z.object({
