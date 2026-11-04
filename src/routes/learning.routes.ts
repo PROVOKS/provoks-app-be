@@ -25,6 +25,13 @@ learningRoutes.get(
 
 learningRoutes.get("/paths", ...student, learningController.myPaths);
 
+learningRoutes.get(
+  "/paths/:slug",
+  ...student,
+  validate({ params: slugParamSchema }),
+  learningController.path,
+);
+
 /// gabung path pakai kode
 learningRoutes.post(
   "/paths/join",

@@ -952,4 +952,103 @@ export const learningService = {
       };
     });
   },
+
+  /** Detail satu path + daftar course di dalamnya (untuk siswa) */
+  async getPath(slug: string, userId: string) {
+    const path = await prisma.path.findUnique({
+      where: { slug },
+      include: {
+        pathEnrollments: { where: { userId } },
+        courses: {
+          where: { status: "PUBLISHED" },
+          orderBy: { createdAt: "asc" },
+          include: {
+            path: true,
+            tags: { include: { tag: true } },
+            parts: { include: { silabusParts: true } },
+            blockedBy: { select: { id: true, title: true, slug: true } },
+            enrollments: {
+              where: { userId },
+              select: { progressPercent: true, enrolledAt: true },
+            },
+          },
+        },
+      },
+    });
+
+    if (!path || path.status !== "PUBLISHED") {
+      throw ApiError.notFound("Path tidak ditemukan");
+    }
+
+    const prerequisiteIds = path.courses
+      .map((course) => course.blockedBy?.id)
+      .filter((id): id is string => Boolean(id));
+
+    const prerequisiteProgress = prerequisiteIds.length
+      ? await prisma.enrollment.findMany({
+          where: { userId, courseId: { in: prerequisiteIds } },
+          select: { courseId: true, progressPercent: true },
+        })
+      : [];
+    const progressByCourse = new Map(
+      prerequisiteProgress.map((row) => [row.courseId, row.progressPercent]),
+    );
+
+    const enrollment = path.pathEnrollments[0];
+
+    const courses = path.courses.map((course) => {
+      const silabusCount = course.parts.reduce(
+        (total, part) => total + part.silabusParts.length,
+        0,
+      );
+      const minutes = course.parts.reduce(
+        (total, part) =>
+          total +
+          part.silabusParts.reduce((sum, item) => sum + item.durationMinutes, 0),
+        0,
+      );
+
+      const courseEnrollment = course.enrollments[0];
+      const prerequisiteProgressPercent = course.blockedBy
+        ? (progressByCourse.get(course.blockedBy.id) ?? 0)
+        : null;
+
+      return {
+        id: course.id,
+        title: course.title,
+        slug: course.slug,
+        thumbnailUrl: course.thumbnailUrl,
+        status: course.status,
+        path: course.path,
+        tags: course.tags.map((item) => item.tag),
+        progressPercent: courseEnrollment?.progressPercent ?? 0,
+        silabusCount,
+        durationMinutes: minutes,
+        enrolledAt: courseEnrollment?.enrolledAt ?? null,
+        locked:
+          course.blockedBy !== null &&
+          (prerequisiteProgressPercent ?? 0) < 100,
+        blockedBy: course.blockedBy
+          ? {
+              id: course.blockedBy.id,
+              title: course.blockedBy.title,
+              slug: course.blockedBy.slug,
+              progressPercent: prerequisiteProgressPercent ?? 0,
+            }
+          : null,
+      };
+    });
+
+    return {
+      id: path.id,
+      name: path.name,
+      slug: path.slug,
+      description: path.description,
+      joined: enrollment?.status === "APPROVED",
+      status: enrollment?.status ?? null,
+      enrollmentId: enrollment?.id ?? null,
+      courseCount: courses.length,
+      courses,
+    };
+  },
 };

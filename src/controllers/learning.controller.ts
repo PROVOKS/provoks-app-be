@@ -69,4 +69,12 @@ export const learningController = {
     const data = await learningService.myPaths(req.user!.sub);
     res.json({ success: true, message: "OK", data });
   }),
+
+  path: asyncHandler(async (req: Request, res: Response) => {
+    const data = await learningService.getPath(
+      param(req, "slug"),
+      req.user!.sub,
+    );
+    res.json({ success: true, message: "OK", data });
+  }),
 };
