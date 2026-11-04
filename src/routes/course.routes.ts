@@ -2,7 +2,12 @@ import { Router } from "express";
 import { z } from "zod";
 
 import { courseController } from "../controllers/course.controller";
-import { authenticate, authorize, bulkDeleteAdminOnly } from "../middlewares/auth";
+import {
+  authenticate,
+  authorize,
+  bulkDeleteAdminOnly,
+  optionalAuth,
+} from "../middlewares/auth";
 import { validate } from "../middlewares/validate";
 import { bulkCourseSchema } from "../validators/bulk.schema";
 import {
@@ -14,13 +19,24 @@ import { idParamSchema } from "../validators/path.schema";
 
 export const courseRoutes = Router();
 
-courseRoutes.get("/", validate({ query: listCourseQuerySchema }), courseController.list);
+courseRoutes.get(
+  "/",
+  optionalAuth,
+  validate({ query: listCourseQuerySchema }),
+  courseController.list,
+);
 courseRoutes.get(
   "/slug/:slug",
+  optionalAuth,
   validate({ params: z.object({ slug: z.string().min(1) }) }),
   courseController.detailBySlug,
 );
-courseRoutes.get("/:id", validate({ params: idParamSchema }), courseController.detail);
+courseRoutes.get(
+  "/:id",
+  optionalAuth,
+  validate({ params: idParamSchema }),
+  courseController.detail,
+);
 courseRoutes.post(
   "/bulk",
   authenticate,

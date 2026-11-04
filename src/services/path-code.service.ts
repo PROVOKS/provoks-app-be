@@ -2,6 +2,7 @@ import crypto from "node:crypto";
 
 import { prisma } from "../db/prisma";
 import { ApiError } from "../utils/api-error";
+import { assertPathAccess, type Actor } from "../utils/access";
 
 /** Tanpa karakter ambigu (0/O, 1/I/L). */
 const ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
@@ -52,7 +53,9 @@ function shapeCode(code: {
 
 export const pathCodeService = {
   /** Daftar kode untuk satu path (termasuk yang sudah kedaluwarsa/dicabut). */
-  async list(pathId: string) {
+  async list(pathId: string, actor?: Actor) {
+    if (actor) await assertPathAccess(actor, pathId);
+
     const codes = await prisma.pathJoinCode.findMany({
       where: { pathId },
       orderBy: { createdAt: "desc" },
@@ -74,7 +77,10 @@ export const pathCodeService = {
     pathId: string,
     input: { expiresAt?: string | null },
     createdBy: string,
+    actor?: Actor,
   ) {
+    if (actor) await assertPathAccess(actor, pathId);
+
     const path = await prisma.path.findUnique({ where: { id: pathId } });
     if (!path) throw ApiError.notFound("Path tidak ditemukan");
 
@@ -113,7 +119,9 @@ export const pathCodeService = {
     throw ApiError.conflict("Gagal membuat kode unik, coba lagi");
   },
 
-  async revoke(pathId: string, codeId: string) {
+  async revoke(pathId: string, codeId: string, actor?: Actor) {
+    if (actor) await assertPathAccess(actor, pathId);
+
     const code = await prisma.pathJoinCode.findFirst({
       where: { id: codeId, pathId },
     });

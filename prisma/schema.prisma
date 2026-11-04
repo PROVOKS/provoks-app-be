@@ -67,6 +67,8 @@ model User {
   quizAttempts QuizAttempt[]
   pathEnrollments PathEnrollment[]
   joinAttempts PathJoinAttempt[]
+  /// path yang diampu sebagai mentor (role INSTRUCTOR)
+  mentorPaths PathMentor[]
 }
 
 // ---------- katalog ----------
@@ -84,6 +86,23 @@ model Path {
 
   pathEnrollments PathEnrollment[]
   joinCodes       PathJoinCode[]
+  /// mentor (instruktur) yang dialokasikan mengampu path ini
+  mentors         PathMentor[]
+}
+
+/// alokasi mentor per path: 1 path banyak mentor, 1 mentor banyak path
+model PathMentor {
+  id         String   @id @default(cuid())
+  pathId     String
+  userId     String
+  assignedBy String?
+  createdAt  DateTime @default(now())
+
+  path Path @relation(fields: [pathId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([pathId, userId])
+  @@index([userId])
 }
 
 model Tag {

@@ -55,6 +55,26 @@ export const authenticate: RequestHandler = (
   }
 };
 
+/**
+ * Coba baca token kalau ada, tapi jangan gagal kalau tidak ada.
+ * Dipakai endpoint publik yang perlu menyesuaikan hasil untuk staff.
+ */
+export const optionalAuth: RequestHandler = (
+  req: Request,
+  _res: Response,
+  next: NextFunction,
+) => {
+  const token = extractToken(req);
+  if (!token) return next();
+
+  try {
+    req.user = jwt.verify(token, env.JWT_SECRET) as AuthPayload;
+  } catch {
+    // token tidak valid -> diperlakukan sebagai pengunjung publik
+  }
+  return next();
+};
+
 export const authorize =
   (...roles: string[]): RequestHandler =>
   (req, _res, next) => {

@@ -1,8 +1,15 @@
 import { Router } from "express";
+import { z } from "zod";
 
 import { pathController } from "../controllers/path.controller";
 import { pathCodeController } from "../controllers/path-code.controller";
-import { authenticate, authorize, bulkDeleteAdminOnly } from "../middlewares/auth";
+import { pathMentorController } from "../controllers/path-mentor.controller";
+import {
+  authenticate,
+  authorize,
+  bulkDeleteAdminOnly,
+  optionalAuth,
+} from "../middlewares/auth";
 import { validate } from "../middlewares/validate";
 import { bulkPathSchema } from "../validators/bulk.schema";
 import {
@@ -18,10 +25,51 @@ import {
 
 export const pathRoutes = Router();
 
-pathRoutes.get("/", validate({ query: listPathQuerySchema }), pathController.list);
-pathRoutes.get("/:id", validate({ params: idParamSchema }), pathController.detail);
+pathRoutes.get(
+  "/",
+  optionalAuth,
+  validate({ query: listPathQuerySchema }),
+  pathController.list,
+);
+pathRoutes.get(
+  "/:id",
+  optionalAuth,
+  validate({ params: idParamSchema }),
+  pathController.detail,
+);
 
-/// akses masuk path lewat kode
+/// alokasi mentor (khusus admin)
+pathRoutes.get(
+  "/:id/mentors",
+  authenticate,
+  authorize("ADMIN"),
+  validate({ params: idParamSchema }),
+  pathMentorController.list,
+);
+pathRoutes.post(
+  "/:id/mentors",
+  authenticate,
+  authorize("ADMIN"),
+  validate({
+    params: idParamSchema,
+    body: z.object({ userId: z.string().min(1, "userId wajib diisi") }),
+  }),
+  pathMentorController.add,
+);
+pathRoutes.delete(
+  "/:id/mentors/:userId",
+  authenticate,
+  authorize("ADMIN"),
+  validate({
+    params: z.object({
+      id: z.string().min(1),
+      userId: z.string().min(1),
+    }),
+  }),
+  pathMentorController.remove,
+);
+
+/// akses masuk path lewat kode (admin & mentor path terkait)
 pathRoutes.get(
   "/:id/codes",
   authenticate,
@@ -47,7 +95,7 @@ pathRoutes.patch(
 pathRoutes.post(
   "/bulk",
   authenticate,
-  authorize("ADMIN", "INSTRUCTOR"),
+  authorize("ADMIN"),
   bulkDeleteAdminOnly,
   validate({ body: bulkPathSchema }),
   pathController.bulk,
@@ -55,14 +103,14 @@ pathRoutes.post(
 pathRoutes.post(
   "/",
   authenticate,
-  authorize("ADMIN", "INSTRUCTOR"),
+  authorize("ADMIN"),
   validate({ body: createPathSchema }),
   pathController.create,
 );
 pathRoutes.put(
   "/:id",
   authenticate,
-  authorize("ADMIN", "INSTRUCTOR"),
+  authorize("ADMIN"),
   validate({ params: idParamSchema, body: updatePathSchema }),
   pathController.update,
 );

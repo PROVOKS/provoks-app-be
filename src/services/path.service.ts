@@ -1,5 +1,6 @@
 import { prisma } from "../db/prisma";
 import { ApiError } from "../utils/api-error";
+import { assignedPathIds, assertPathAccess, type Actor } from "../utils/access";
 import { getPagination, paginated } from "../utils/pagination";
 import { slugify } from "../utils/slug";
 
@@ -11,10 +12,12 @@ type ListQuery = {
 };
 
 export const pathService = {
-  async list(query: ListQuery) {
+  async list(query: ListQuery, actor?: Actor) {
     const { page, perPage, skip, take } = getPagination(query);
+    const pathIds = actor ? await assignedPathIds(actor) : null;
 
     const where = {
+      ...(pathIds === null ? {} : { id: { in: pathIds } }),
       ...(query.status ? { status: query.status } : {}),
       ...(query.search
         ? { name: { contains: query.search, mode: "insensitive" as const } }
@@ -27,7 +30,9 @@ export const pathService = {
         skip,
         take,
         orderBy: { createdAt: "desc" },
-        include: { _count: { select: { courses: true } } },
+        include: {
+          _count: { select: { courses: true, mentors: true } },
+        },
       }),
       prisma.path.count({ where }),
     ]);
@@ -36,6 +41,7 @@ export const pathService = {
       items.map(({ _count, ...path }) => ({
         ...path,
         courseCount: _count.courses,
+        mentorCount: _count.mentors,
       })),
       total,
       page,
@@ -43,17 +49,30 @@ export const pathService = {
     );
   },
 
-  async getById(id: string) {
+  async getById(id: string, actor?: Actor) {
+    if (actor) await assertPathAccess(actor, id);
+
     const path = await prisma.path.findUnique({
       where: { id },
       include: {
         courses: { orderBy: { createdAt: "desc" } },
-        _count: { select: { courses: true } },
+        _count: { select: { courses: true, mentors: true } },
+        mentors: {
+          orderBy: { createdAt: "asc" },
+          include: {
+            user: { select: { id: true, name: true, email: true, role: true } },
+          },
+        },
       },
     });
     if (!path) throw ApiError.notFound("Path tidak ditemukan");
-    const { _count, ...rest } = path;
-    return { ...rest, courseCount: _count.courses };
+    const { _count, mentors, ...rest } = path;
+    return {
+      ...rest,
+      courseCount: _count.courses,
+      mentorCount: _count.mentors,
+      mentors: mentors.map((item) => item.user),
+    };
   },
 
   async create(input: {

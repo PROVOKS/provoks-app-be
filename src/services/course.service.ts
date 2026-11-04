@@ -1,5 +1,6 @@
 import { prisma } from "../db/prisma";
 import { ApiError } from "../utils/api-error";
+import { assignedPathIds, assertCourseAccess, assertPathAccess, type Actor } from "../utils/access";
 import { getPagination, paginated } from "../utils/pagination";
 import { slugify } from "../utils/slug";
 
@@ -88,10 +89,12 @@ async function assertValidPrerequisite(
   }
 }
 
-export const courseService = {  async list(query: ListQuery) {
+export const courseService = {  async list(query: ListQuery, actor?: Actor) {
     const { page, perPage, skip, take } = getPagination(query);
+    const pathIds = actor ? await assignedPathIds(actor) : null;
 
     const where = {
+      ...(pathIds === null ? {} : { pathId: { in: pathIds } }),
       ...(query.status ? { status: query.status } : {}),
       ...(query.pathId ? { pathId: query.pathId } : {}),
       ...(query.tagId ? { tags: { some: { tagId: query.tagId } } } : {}),
@@ -127,7 +130,9 @@ export const courseService = {  async list(query: ListQuery) {
     );
   },
 
-  async getById(id: string) {
+  async getById(id: string, actor?: Actor) {
+    if (actor) await assertCourseAccess(actor, id);
+
     const course = await prisma.course.findUnique({
       where: { id },
       include: detailInclude,
@@ -136,12 +141,13 @@ export const courseService = {  async list(query: ListQuery) {
     return shapeCourse(course);
   },
 
-  async getBySlug(slug: string) {
+  async getBySlug(slug: string, actor?: Actor) {
     const course = await prisma.course.findUnique({
       where: { slug },
       include: detailInclude,
     });
     if (!course) throw ApiError.notFound("Course tidak ditemukan");
+    if (actor) await assertCourseAccess(actor, course.id);
     return shapeCourse(course);
   },
 
@@ -156,7 +162,19 @@ export const courseService = {  async list(query: ListQuery) {
     pathId?: string;
     blockedByCourseId?: string | null;
     tagIds?: string[];
-  }) {
+  }, actor?: Actor) {
+    if (actor) {
+      const pathIds = await assignedPathIds(actor);
+      if (pathIds !== null) {
+        if (!input.pathId) {
+          throw ApiError.badRequest("Pilih path untuk course baru");
+        }
+        if (!pathIds.includes(input.pathId)) {
+          throw ApiError.forbidden("Kamu tidak punya akses ke path ini");
+        }
+      }
+    }
+
     const { tagIds, ...data } = input;
     const slug = input.slug ?? slugify(input.title);
     const exists = await prisma.course.findUnique({ where: { slug } });
@@ -186,8 +204,18 @@ export const courseService = {  async list(query: ListQuery) {
     return { ...rest, tags: tags.map((t) => t.tag), studentCount: _count.enrollments };
   },
 
-  async update(id: string, input: Record<string, unknown>) {
-    await this.getById(id);
+  async update(id: string, input: Record<string, unknown>, actor?: Actor) {
+    await this.getById(id, actor);
+
+    if (actor && "pathId" in input) {
+      const nextPathId = (input.pathId as string | null) || null;
+      if (nextPathId) await assertPathAccess(actor, nextPathId);
+      else if (actor.role !== "ADMIN") {
+        throw ApiError.forbidden(
+          "Hanya admin yang bisa mengeluarkan course dari path",
+        );
+      }
+    }
 
     const { tagIds, ...data } = input as {
       tagIds?: string[];
@@ -224,7 +252,8 @@ export const courseService = {  async list(query: ListQuery) {
     return prisma.course.update({ where: { id }, data });
   },
 
-  async remove(id: string) {
+  async remove(id: string, actor?: Actor) {
+    if (actor) await assertCourseAccess(actor, id);
     await this.getById(id);
     await prisma.course.delete({ where: { id } });
     return { id };
@@ -234,17 +263,32 @@ export const courseService = {  async list(query: ListQuery) {
     action: "delete" | "status";
     ids: string[];
     status?: "DRAFT" | "PUBLISHED" | "ARCHIVED";
-  }) {
+  }, actor?: Actor) {
+    let ids = input.ids;
+
+    if (actor) {
+      const pathIds = await assignedPathIds(actor);
+      if (pathIds !== null) {
+        const allowed = await prisma.course.findMany({
+          where: { id: { in: ids }, pathId: { in: pathIds } },
+          select: { id: true },
+        });
+        ids = allowed.map((course) => course.id);
+      }
+    }
+
+    if (ids.length === 0) return { affected: 0 };
+
     if (input.action === "delete") {
       const result = await prisma.course.deleteMany({
-        where: { id: { in: input.ids } },
+        where: { id: { in: ids } },
       });
       return { affected: result.count };
     }
 
     if (!input.status) throw ApiError.badRequest("Status wajib diisi");
     const result = await prisma.course.updateMany({
-      where: { id: { in: input.ids } },
+      where: { id: { in: ids } },
       data: { status: input.status },
     });
     return { affected: result.count };

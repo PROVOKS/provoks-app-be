@@ -1,42 +1,53 @@
 import type { Request, Response } from "express";
 
 import { courseService } from "../services/course.service";
+import { actorOf } from "../utils/actor";
 import { asyncHandler } from "../utils/async-handler";
 import { param } from "../utils/param";
 
 export const courseController = {
   list: asyncHandler(async (req: Request, res: Response) => {
-    const data = await courseService.list(req.validatedQuery ?? {});
+    const data = await courseService.list(
+      req.validatedQuery ?? {},
+      actorOf(req),
+    );
     res.json({ success: true, message: "OK", data });
   }),
 
   detail: asyncHandler(async (req: Request, res: Response) => {
-    const data = await courseService.getById(param(req, "id"));
+    const data = await courseService.getById(param(req, "id"), actorOf(req));
     res.json({ success: true, message: "OK", data });
   }),
 
   detailBySlug: asyncHandler(async (req: Request, res: Response) => {
-    const data = await courseService.getBySlug(param(req, "slug"));
+    const data = await courseService.getBySlug(
+      param(req, "slug"),
+      actorOf(req),
+    );
     res.json({ success: true, message: "OK", data });
   }),
 
   create: asyncHandler(async (req: Request, res: Response) => {
-    const data = await courseService.create(req.body);
+    const data = await courseService.create(req.body, actorOf(req));
     res.status(201).json({ success: true, message: "Course dibuat", data });
   }),
 
   update: asyncHandler(async (req: Request, res: Response) => {
-    const data = await courseService.update(param(req, "id"), req.body);
+    const data = await courseService.update(
+      param(req, "id"),
+      req.body,
+      actorOf(req),
+    );
     res.json({ success: true, message: "Course diperbarui", data });
   }),
 
   remove: asyncHandler(async (req: Request, res: Response) => {
-    const data = await courseService.remove(param(req, "id"));
+    const data = await courseService.remove(param(req, "id"), actorOf(req));
     res.json({ success: true, message: "Course dihapus", data });
   }),
 
   bulk: asyncHandler(async (req: Request, res: Response) => {
-    const data = await courseService.bulk(req.body);
+    const data = await courseService.bulk(req.body, actorOf(req));
     res.json({ success: true, message: "Aksi massal selesai", data });
   }),
 };

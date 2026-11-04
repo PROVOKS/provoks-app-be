@@ -1,12 +1,13 @@
 import type { Request, Response } from "express";
 
 import { pathCodeService } from "../services/path-code.service";
+import { actorOf } from "../utils/actor";
 import { asyncHandler } from "../utils/async-handler";
 import { param } from "../utils/param";
 
 export const pathCodeController = {
   list: asyncHandler(async (req: Request, res: Response) => {
-    const data = await pathCodeService.list(param(req, "id"));
+    const data = await pathCodeService.list(param(req, "id"), actorOf(req));
     res.json({ success: true, message: "OK", data });
   }),
 
@@ -15,6 +16,7 @@ export const pathCodeController = {
       param(req, "id"),
       { expiresAt: req.body.expiresAt ?? null },
       req.user!.sub,
+      actorOf(req),
     );
     res.status(201).json({ success: true, message: "Kode dibuat", data });
   }),
@@ -23,6 +25,7 @@ export const pathCodeController = {
     const data = await pathCodeService.revoke(
       param(req, "id"),
       param(req, "codeId"),
+      actorOf(req),
     );
     res.json({ success: true, message: "Kode dicabut", data });
   }),

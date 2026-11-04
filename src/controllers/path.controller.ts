@@ -1,17 +1,21 @@
 import type { Request, Response } from "express";
 
 import { pathService } from "../services/path.service";
+import { actorOf } from "../utils/actor";
 import { asyncHandler } from "../utils/async-handler";
 import { param } from "../utils/param";
 
 export const pathController = {
   list: asyncHandler(async (req: Request, res: Response) => {
-    const data = await pathService.list(req.validatedQuery ?? {});
+    const data = await pathService.list(
+      req.validatedQuery ?? {},
+      actorOf(req),
+    );
     res.json({ success: true, message: "OK", data });
   }),
 
   detail: asyncHandler(async (req: Request, res: Response) => {
-    const data = await pathService.getById(param(req, "id"));
+    const data = await pathService.getById(param(req, "id"), actorOf(req));
     res.json({ success: true, message: "OK", data });
   }),
 
