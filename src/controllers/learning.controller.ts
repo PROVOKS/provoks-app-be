@@ -35,10 +35,23 @@ export const learningController = {
     res.json({ success: true, message: "OK", data });
   }),
 
+  startQuiz: asyncHandler(async (req: Request, res: Response) => {
+    const data = await learningService.startQuiz(
+      param(req, "blockId"),
+      req.user!.sub,
+    );
+    res.status(201).json({
+      success: true,
+      message: data.resumed ? "Melanjutkan percobaan" : "Percobaan dimulai",
+      data,
+    });
+  }),
+
   submitQuiz: asyncHandler(async (req: Request, res: Response) => {
     const data = await learningService.submitQuiz(
       param(req, "blockId"),
       req.user!.sub,
+      req.body.attemptId,
       req.body.answers,
     );
     res.status(201).json({ success: true, message: "Kuis dikumpulkan", data });

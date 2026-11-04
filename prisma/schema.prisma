@@ -293,19 +293,38 @@ model SilabusProgress {
 }
 
 /// hasil pengerjaan kuis oleh siswa
+enum QuizAttemptStatus {
+  /// sedang dikerjakan (timer berjalan)
+  IN_PROGRESS
+  /// sudah dikumpulkan
+  SUBMITTED
+  /// lewat batas waktu (tetap dinilai)
+  EXPIRED
+}
+
 model QuizAttempt {
-  id             String   @id @default(cuid())
-  userId         String
-  contentBlockId String
+  id              String            @id @default(cuid())
+  userId          String
+  contentBlockId  String
+  /// urutan percobaan: 1, 2, 3, ...
+  attemptNumber   Int               @default(1)
+  status          QuizAttemptStatus @default(SUBMITTED)
   /// { "<questionId>": optionIndex }
-  answers        Json
-  score          Int
-  totalPoints    Int
-  passed         Boolean  @default(false)
-  submittedAt    DateTime @default(now())
+  answers         Json              @default("{}")
+  score           Int?
+  totalPoints     Int?
+  passed          Boolean           @default(false)
+  startedAt       DateTime          @default(now())
+  submittedAt     DateTime?
+  /// durasi pengerjaan nyata (detik)
+  durationSeconds Int?
+  /// true kalau dikumpulkan karena waktu habis
+  timedOut        Boolean           @default(false)
 
   user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   contentBlock ContentBlock @relation(fields: [contentBlockId], references: [id], onDelete: Cascade)
 
+  @@unique([userId, contentBlockId, attemptNumber])
   @@index([userId, contentBlockId])
+  @@index([userId, contentBlockId, submittedAt])
 }

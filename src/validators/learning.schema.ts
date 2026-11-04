@@ -6,6 +6,7 @@ export const updateProgressSchema = z.object({
 });
 
 export const submitQuizSchema = z.object({
+  attemptId: z.string().min(1, "attemptId wajib diisi"),
   answers: z.record(z.string(), z.coerce.number().min(0)),
 });
 

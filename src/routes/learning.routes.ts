@@ -62,6 +62,13 @@ learningRoutes.get(
 );
 
 learningRoutes.post(
+  "/quiz/:blockId/start",
+  ...student,
+  validate({ params: blockIdParamSchema }),
+  learningController.startQuiz,
+);
+
+learningRoutes.post(
   "/quiz/:blockId/submit",
   ...student,
   validate({ params: blockIdParamSchema, body: submitQuizSchema }),

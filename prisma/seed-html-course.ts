@@ -23,7 +23,7 @@ type Block =
   | { type: "CODE"; content: { language: string; code: string } }
   | { type: "CALLOUT"; content: { variant: string; text: string } }
   | { type: "DIVIDER"; content: Record<string, never> }
-  | { type: "QUIZ"; content: { title: string }; questions: QuizQuestionDef[] };
+  | { type: "QUIZ"; content: { title: string; timeLimitMinutes: number; maxAttempts: number }; questions: QuizQuestionDef[] };
 
 type Lesson = {
   title: string;
@@ -60,9 +60,17 @@ const callout = (
 
 const divider = (): Block => ({ type: "DIVIDER", content: {} });
 
-const quiz = (title: string, questions: QuizQuestionDef[]): Block => ({
+const quiz = (
+  title: string,
+  questions: QuizQuestionDef[],
+  settings: { timeLimitMinutes?: number; maxAttempts?: number } = {},
+): Block => ({
   type: "QUIZ",
-  content: { title },
+  content: {
+    title,
+    timeLimitMinutes: settings.timeLimitMinutes ?? 15,
+    maxAttempts: settings.maxAttempts ?? 3,
+  },
   questions,
 });
 

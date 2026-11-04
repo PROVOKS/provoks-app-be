@@ -75,6 +75,90 @@ function stripQuizAnswers<T extends { questions: { answerIndex: number }[] }>(
   };
 }
 
+const QUIZ_SUBMIT_GRACE_SECONDS = 15;
+
+type QuizSettings = {
+  title: string;
+  /** null = tanpa batas waktu */
+  timeLimitMinutes: number | null;
+  /** null = tanpa batas percobaan */
+  maxAttempts: number | null;
+};
+
+/** Baca pengaturan kuis dari `ContentBlock.content` (JSON). */
+function quizSettings(content: unknown): QuizSettings {
+  const raw = (content ?? {}) as Record<string, unknown>;
+  const positive = (value: unknown) => {
+    const num = Number(value);
+    return Number.isFinite(num) && num > 0 ? Math.floor(num) : null;
+  };
+
+  return {
+    title:
+      typeof raw.title === "string" && raw.title.trim()
+        ? raw.title.trim()
+        : "Kuis",
+    timeLimitMinutes: positive(raw.timeLimitMinutes),
+    maxAttempts: positive(raw.maxAttempts),
+  };
+}
+
+/** Batas waktu sebuah percobaan (null kalau tanpa batas). */
+function attemptDeadline(startedAt: Date, timeLimitMinutes: number | null) {
+  if (!timeLimitMinutes) return null;
+  return new Date(startedAt.getTime() + timeLimitMinutes * 60_000);
+}
+
+/**
+ * Tandai percobaan yang sudah lewat batas waktu sebagai EXPIRED.
+ * Dipanggil saat membuka/memulai kuis supaya hitungan percobaan akurat.
+ */
+async function expireStaleAttempts(
+  userId: string,
+  blockId: string,
+  timeLimitMinutes: number | null,
+) {
+  if (!timeLimitMinutes) return;
+
+  const cutoff = new Date(
+    Date.now() - (timeLimitMinutes * 60 + QUIZ_SUBMIT_GRACE_SECONDS) * 1000,
+  );
+
+  await prisma.quizAttempt.updateMany({
+    where: {
+      userId,
+      contentBlockId: blockId,
+      status: "IN_PROGRESS",
+      startedAt: { lt: cutoff },
+    },
+    data: { status: "EXPIRED", timedOut: true, submittedAt: new Date() },
+  });
+}
+
+function mapAttemptSummary(attempt: {
+  id: string;
+  attemptNumber: number;
+  status: "IN_PROGRESS" | "SUBMITTED" | "EXPIRED";
+  score: number | null;
+  passed: boolean;
+  startedAt: Date;
+  submittedAt: Date | null;
+  durationSeconds: number | null;
+  timedOut: boolean;
+}) {
+  return {
+    id: attempt.id,
+    attemptNumber: attempt.attemptNumber,
+    status: attempt.status,
+    score: attempt.score,
+    passed: attempt.passed,
+    startedAt: attempt.startedAt,
+    submittedAt: attempt.submittedAt,
+    durationSeconds: attempt.durationSeconds,
+    timedOut: attempt.timedOut,
+  };
+}
+
 export const learningService = {
   /** Detail course untuk siswa + status kunci & progres */
   async getCourse(slug: string, userId: string) {
@@ -147,7 +231,17 @@ export const learningService = {
         where: { userId, silabusPartId: { in: silabusIds } },
       }),
       prisma.quizAttempt.findMany({
-        where: { userId, contentBlockId: { in: course.parts.flatMap((p) => p.silabusParts.flatMap((s) => s.blocks.filter((b) => b.type === "QUIZ").map((b) => b.id))) } },
+        where: {
+          userId,
+          contentBlockId: {
+            in: course.parts.flatMap((p) =>
+              p.silabusParts.flatMap((s) =>
+                s.blocks.filter((b) => b.type === "QUIZ").map((b) => b.id),
+              ),
+            ),
+          },
+          status: { in: ["SUBMITTED", "EXPIRED"] },
+        },
         orderBy: { submittedAt: "desc" },
       }),
     ]);
@@ -155,16 +249,34 @@ export const learningService = {
     const progress = new Map(progressRows.map((row) => [row.silabusPartId, row.completed]));
 
     const quizPassed = new Map<string, boolean>();
-    const attemptByBlock = new Map<string, { id: string; score: number; passed: boolean; submittedAt: Date }>();
+    const attemptByBlock = new Map<
+      string,
+      {
+        id: string;
+        score: number;
+        passed: boolean;
+        attemptNumber: number;
+        submittedAt: Date | null;
+      }
+    >();
     for (const attempt of attempts) {
       if (!attemptByBlock.has(attempt.contentBlockId)) {
         attemptByBlock.set(attempt.contentBlockId, {
           id: attempt.id,
-          score: attempt.score,
+          score: attempt.score ?? 0,
           passed: attempt.passed,
+          attemptNumber: attempt.attemptNumber,
           submittedAt: attempt.submittedAt,
         });
       }
+    }
+
+    const attemptsUsedByBlock = new Map<string, number>();
+    for (const attempt of attempts) {
+      attemptsUsedByBlock.set(
+        attempt.contentBlockId,
+        (attemptsUsedByBlock.get(attempt.contentBlockId) ?? 0) + 1,
+      );
     }
 
     // hitung status lulus quiz per silabus part
@@ -197,10 +309,32 @@ export const learningService = {
         const item = lockMap.get(raw.id)!;
         return {
           ...item,
-          blocks: item.blocks.map((block) => ({
-            ...stripQuizAnswers(block),
-            attempt: attemptByBlock.get(block.id) ?? null,
-          })),
+          blocks: item.blocks.map((block) => {
+            const quizMeta =
+              block.type === "QUIZ"
+                ? (() => {
+                    const settings = quizSettings(block.content);
+                    const used = attemptsUsedByBlock.get(block.id) ?? 0;
+                    const left =
+                      settings.maxAttempts === null
+                        ? null
+                        : Math.max(0, settings.maxAttempts - used);
+                    return {
+                      attemptsUsed: used,
+                      maxAttempts: settings.maxAttempts,
+                      attemptsLeft: left,
+                      timeLimitMinutes: settings.timeLimitMinutes,
+                      canAttempt: left === null || left > 0,
+                    };
+                  })()
+                : null;
+
+            return {
+              ...stripQuizAnswers(block),
+              attempt: attemptByBlock.get(block.id) ?? null,
+              quizMeta,
+            };
+          }),
         };
       }),
     }));
@@ -450,7 +584,7 @@ export const learningService = {
     });
   },
 
-  /** Soal kuis untuk siswa (tanpa kunci jawaban) */
+  /** Soal kuis untuk siswa (tanpa kunci jawaban) + status percobaan */
   async getQuiz(blockId: string, userId: string) {
     const block = await prisma.contentBlock.findUnique({
       where: { id: blockId },
@@ -464,12 +598,16 @@ export const learningService = {
       throw ApiError.notFound("Kuis tidak ditemukan");
     }
 
+    const settings = quizSettings(block.content);
+
     const flat = await this.flattenItems(block.silabusPart.coursePart.courseId);
     const index = flat.findIndex((item) => item.id === block.silabusPartId);
     const progressRows = await prisma.silabusProgress.findMany({
       where: {
         userId,
-        silabusPartId: { in: flat.slice(0, Math.max(index, 0)).map((item) => item.id) },
+        silabusPartId: {
+          in: flat.slice(0, Math.max(index, 0)).map((item) => item.id),
+        },
       },
     });
     const progressMap = new Map(
@@ -483,10 +621,13 @@ export const learningService = {
       throw ApiError.badRequest(`Selesaikan "${blocked.title}" terlebih dahulu`);
     }
 
-    const [attempt, course] = await Promise.all([
-      prisma.quizAttempt.findFirst({
+    // percobaan yang telanjur lewat batas waktu ditutup dulu
+    await expireStaleAttempts(userId, blockId, settings.timeLimitMinutes);
+
+    const [attempts, course] = await Promise.all([
+      prisma.quizAttempt.findMany({
         where: { userId, contentBlockId: blockId },
-        orderBy: { submittedAt: "desc" },
+        orderBy: { attemptNumber: "desc" },
       }),
       prisma.course.findUnique({
         where: { id: block.silabusPart.coursePart.courseId },
@@ -494,11 +635,43 @@ export const learningService = {
       }),
     ]);
 
+    const active =
+      attempts.find((item) => item.status === "IN_PROGRESS") ?? null;
+    const attemptsUsed = attempts.filter(
+      (item) => item.status !== "IN_PROGRESS",
+    ).length;
+    const attemptsLeft =
+      settings.maxAttempts === null
+        ? null
+        : Math.max(0, settings.maxAttempts - attemptsUsed);
+    const canAttempt =
+      Boolean(active) || attemptsLeft === null || attemptsLeft > 0;
+    const lastSubmitted = attempts.find(
+      (item) => item.status !== "IN_PROGRESS",
+    );
+
     return {
       id: block.id,
       silabusPartId: block.silabusPartId,
-      title: (block.content as { title?: string } | null)?.title ?? "Kuis",
+      title: settings.title,
       passingGrade: course?.passingGrade ?? 70,
+      timeLimitMinutes: settings.timeLimitMinutes,
+      maxAttempts: settings.maxAttempts,
+      attemptsUsed,
+      attemptsLeft,
+      canAttempt,
+      activeAttempt: active
+        ? {
+            id: active.id,
+            attemptNumber: active.attemptNumber,
+            startedAt: active.startedAt,
+            expiresAt: attemptDeadline(
+              active.startedAt,
+              settings.timeLimitMinutes,
+            ),
+          }
+        : null,
+      attempts: attempts.map(mapAttemptSummary),
       questions: block.questions.map((question) => ({
         id: question.id,
         question: question.question,
@@ -506,32 +679,112 @@ export const learningService = {
         points: question.points,
         order: question.order,
       })),
-      lastAttempt: attempt
-        ? { id: attempt.id, score: attempt.score, passed: attempt.passed }
+      lastAttempt: lastSubmitted
+        ? {
+            id: lastSubmitted.id,
+            score: lastSubmitted.score,
+            passed: lastSubmitted.passed,
+            attemptNumber: lastSubmitted.attemptNumber,
+          }
         : null,
     };
   },
 
-  /** Nilai jawaban kuis, simpan attempt, auto-selesaikan silabus part */
+  /** Mulai percobaan baru, atau lanjutkan percobaan yang masih berjalan */
+  async startQuiz(blockId: string, userId: string) {
+    const quiz = await this.getQuiz(blockId, userId);
+
+    if (quiz.questions.length === 0) {
+      throw ApiError.badRequest("Kuis belum punya soal");
+    }
+
+    if (quiz.activeAttempt) {
+      return {
+        resumed: true,
+        attemptId: quiz.activeAttempt.id,
+        attemptNumber: quiz.activeAttempt.attemptNumber,
+        startedAt: quiz.activeAttempt.startedAt,
+        expiresAt: quiz.activeAttempt.expiresAt,
+        timeLimitMinutes: quiz.timeLimitMinutes,
+        maxAttempts: quiz.maxAttempts,
+        attemptsUsed: quiz.attemptsUsed,
+        attemptsLeft: quiz.attemptsLeft,
+      };
+    }
+
+    if (!quiz.canAttempt) {
+      throw ApiError.forbidden(
+        `Kesempatan mengerjakan sudah habis (${quiz.attemptsUsed}/${quiz.maxAttempts})`,
+      );
+    }
+
+    const last = await prisma.quizAttempt.findFirst({
+      where: { userId, contentBlockId: blockId },
+      orderBy: { attemptNumber: "desc" },
+      select: { attemptNumber: true },
+    });
+
+    const created = await prisma.quizAttempt.create({
+      data: {
+        userId,
+        contentBlockId: blockId,
+        attemptNumber: (last?.attemptNumber ?? 0) + 1,
+        status: "IN_PROGRESS",
+        answers: {},
+      },
+    });
+
+    return {
+      resumed: false,
+      attemptId: created.id,
+      attemptNumber: created.attemptNumber,
+      startedAt: created.startedAt,
+      expiresAt: attemptDeadline(created.startedAt, quiz.timeLimitMinutes),
+      timeLimitMinutes: quiz.timeLimitMinutes,
+      maxAttempts: quiz.maxAttempts,
+      attemptsUsed: quiz.attemptsUsed,
+      attemptsLeft: quiz.attemptsLeft,
+    };
+  },
+
+  /** Nilai jawaban kuis pada percobaan yang sedang berjalan */
   async submitQuiz(
     blockId: string,
     userId: string,
+    attemptId: string,
     answers: Record<string, number>,
   ) {
-    const block = await prisma.contentBlock.findUnique({
-      where: { id: blockId },
+    const attempt = await prisma.quizAttempt.findUnique({
+      where: { id: attemptId },
       include: {
-        questions: { orderBy: { order: "asc" } },
-        silabusPart: { include: { coursePart: true } },
+        contentBlock: {
+          include: {
+            questions: { orderBy: { order: "asc" } },
+            silabusPart: { include: { coursePart: true } },
+          },
+        },
       },
     });
-    if (!block || block.type !== "QUIZ") {
-      throw ApiError.notFound("Kuis tidak ditemukan");
+
+    if (
+      !attempt ||
+      attempt.userId !== userId ||
+      attempt.contentBlockId !== blockId ||
+      attempt.contentBlock.type !== "QUIZ"
+    ) {
+      throw ApiError.notFound("Percobaan kuis tidak ditemukan");
     }
+
+    if (attempt.status !== "IN_PROGRESS") {
+      throw ApiError.badRequest("Percobaan ini sudah dikumpulkan");
+    }
+
+    const block = attempt.contentBlock;
     if (block.questions.length === 0) {
       throw ApiError.badRequest("Kuis belum punya soal");
     }
 
+    const settings = quizSettings(block.content);
     const courseId = block.silabusPart.coursePart.courseId;
     const course = await prisma.course.findUnique({
       where: { id: courseId },
@@ -561,14 +814,27 @@ export const learningService = {
     const passingGrade = course?.passingGrade ?? 70;
     const passed = score >= passingGrade;
 
-    const attempt = await prisma.quizAttempt.create({
+    const submittedAt = new Date();
+    const durationSeconds = Math.max(
+      0,
+      Math.round((submittedAt.getTime() - attempt.startedAt.getTime()) / 1000),
+    );
+    const timedOut =
+      settings.timeLimitMinutes !== null &&
+      durationSeconds >
+        settings.timeLimitMinutes * 60 + QUIZ_SUBMIT_GRACE_SECONDS;
+
+    const updated = await prisma.quizAttempt.update({
+      where: { id: attempt.id },
       data: {
-        userId,
-        contentBlockId: blockId,
         answers: answers as never,
         score,
         totalPoints,
         passed,
+        submittedAt,
+        durationSeconds,
+        timedOut,
+        status: timedOut ? "EXPIRED" : "SUBMITTED",
       },
     });
 
@@ -592,12 +858,15 @@ export const learningService = {
     }
 
     return {
-      attemptId: attempt.id,
+      attemptId: updated.id,
+      attemptNumber: updated.attemptNumber,
       score,
       passed,
       passingGrade,
       totalPoints,
       earned,
+      durationSeconds,
+      timedOut,
       review,
     };
   },
@@ -639,7 +908,9 @@ export const learningService = {
 
     return {
       attemptId: attempt.id,
-      score: attempt.score,
+      attemptNumber: attempt.attemptNumber,
+      status: attempt.status,
+      score: attempt.score ?? 0,
       passed: attempt.passed,
       passingGrade: course?.passingGrade ?? 70,
       courseTitle: course?.title ?? "",
@@ -647,7 +918,10 @@ export const learningService = {
         (attempt.contentBlock.content as { title?: string } | null)?.title ??
         "Kuis",
       silabusPartId: attempt.contentBlock.silabusPartId,
+      startedAt: attempt.startedAt,
       submittedAt: attempt.submittedAt,
+      durationSeconds: attempt.durationSeconds,
+      timedOut: attempt.timedOut,
       review,
     };
   },
