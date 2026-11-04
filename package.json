@@ -17,6 +17,8 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:seed": "prisma db seed",
     "seed:html": "tsx prisma/seed-html-course.ts",
+    "seed:css": "tsx prisma/seed-css-course.ts",
+    "seed:js": "tsx prisma/seed-js-course.ts",
     "prisma:studio": "prisma studio"
   },
   "keywords": [
