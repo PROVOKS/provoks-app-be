@@ -19,6 +19,7 @@
     "seed:html": "tsx prisma/seed-html-course.ts",
     "seed:css": "tsx prisma/seed-css-course.ts",
     "seed:js": "tsx prisma/seed-js-course.ts",
+    "seed:node": "tsx prisma/seed-node-course.ts",
     "prisma:studio": "prisma studio"
   },
   "keywords": [
