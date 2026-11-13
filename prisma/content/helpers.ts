@@ -38,6 +38,8 @@ export type CourseSeedDef = {
   title: string;
   description: string;
   defaultStatus?: "DRAFT" | "PUBLISHED";
+  /// slug course prasyarat; course ini terkunci sampai prasyarat selesai 100%
+  blockedBySlug?: string;
   tags: { name: string; slug: string; category: string }[];
   parts: CoursePartDef[];
 };
@@ -60,6 +62,7 @@ export const code = (src: string, language = "javascript"): Block => ({
 export const htmlCode = (src: string): Block => code(src, "html");
 export const cssCode = (src: string): Block => code(src, "css");
 export const jsCode = (src: string): Block => code(src, "javascript");
+export const tsCode = (src: string): Block => code(src, "typescript");
 export const bashCode = (src: string): Block => code(src, "bash");
 export const jsonCode = (src: string): Block => code(src, "json");
 
@@ -124,6 +127,31 @@ export async function upsertCourseContent(def: CourseSeedDef) {
       pathId: path?.id ?? null,
     },
   });
+
+  // prasyarat: hanya dipasang kalau course prasyarat ada di path yang sama.
+  if (def.blockedBySlug) {
+    const prerequisite = await prisma.course.findUnique({
+      where: { slug: def.blockedBySlug },
+      select: { id: true, pathId: true },
+    });
+
+    if (!prerequisite) {
+      console.warn(
+        `  ! prasyarat "${def.blockedBySlug}" belum ada — course ${def.slug} tidak dikunci`,
+      );
+    } else if (prerequisite.id === course.id) {
+      console.warn(`  ! course ${def.slug} tidak bisa menjadi prasyarat dirinya sendiri`);
+    } else if ((prerequisite.pathId ?? null) !== (course.pathId ?? null)) {
+      console.warn(
+        `  ! prasyarat "${def.blockedBySlug}" ada di path berbeda — course ${def.slug} tidak dikunci`,
+      );
+    } else if (course.blockedByCourseId !== prerequisite.id) {
+      await prisma.course.update({
+        where: { id: course.id },
+        data: { blockedByCourseId: prerequisite.id },
+      });
+    }
+  }
 
   // sinkronkan tag
   await prisma.courseTag.deleteMany({ where: { courseId: course.id } });

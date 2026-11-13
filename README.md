@@ -67,6 +67,7 @@ content blocks, dan soal quiz. Script-nya idempotent — aman dijalankan ulang.
 | `npm run db:up` / `db:down` | Docker Compose Postgres |
 | `npm run prisma:migrate` | migrasi database |
 | `npm run prisma:seed` | isi data awal (admin + katalog contoh) |
+| `npm run seed:html` / `seed:css` / `seed:js` / `seed:node` | seed course materi + kuis |
 | `npm run prisma:studio` | Prisma Studio |
 
 ## Endpoint
