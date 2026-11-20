@@ -16,6 +16,7 @@ async function main() {
     description:
       "Kursus lanjutan setelah JavaScript Async: memahami Node.js vs browser, npm & library, TypeScript dari nol, modul inti (process, path, fs, event, stream), membangun server HTTP/REST, menata monorepo dengan npm workspaces, serta scaffolding proyek dan Git/GitHub. Ditutup dengan proyek akhir monorepo API TypeScript.",
     defaultStatus: "PUBLISHED",
+    matchBySlugOnly: true,
     tags: [
       { name: "Node.js", slug: "node-js", category: "Backend" },
       { name: "TypeScript", slug: "typescript", category: "Language" },

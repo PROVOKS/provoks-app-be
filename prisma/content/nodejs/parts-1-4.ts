@@ -21,6 +21,110 @@ export const NODE_PARTS_1_4: CoursePartDef[] = [
       "Memahami apa itu Node.js, perbedaannya dengan JavaScript di browser, serta cara menjalankan kode TypeScript di runtime Node.",
     lessons: [
       {
+        title: "Persiapan Praktik: Folder, npm & TypeScript",
+        duration: 22,
+        blocks: [
+          h("Tujuan Pembelajaran"),
+          p(
+            "<p>Menyiapkan proyek <code>latihan-node</code> dari nol: membuat folder, inisialisasi npm, memasang dependency TypeScript, dan menjalankan file pertama.</p>",
+          ),
+          h("Briefing Praktik"),
+          p(
+            "<p>Dependency yang dibutuhkan: <code>typescript</code>, <code>tsx</code>, dan <code>@types/node</code>. Pastikan <strong>Node.js 20 LTS atau lebih baru</strong> dan npm sudah terpasang.</p>",
+          ),
+          bashCode(`
+node -v
+npm -v
+
+mkdir latihan-node
+cd latihan-node
+npm init -y
+npm install -D typescript tsx @types/node
+`),
+          callout(
+            "info",
+            "Proyek latihan-node dipakai sampai Part 8. Kamu tidak perlu membuat proyek baru di setiap lesson; cukup tambah file dan dependency saat diminta.",
+          ),
+          h("1. package.json"),
+          p(
+            "<p>Tambahkan <code>\"type\": \"module\"</code> agar proyek memakai ESM, lalu sesuaikan scripts.</p>",
+          ),
+          jsonCode(`
+{
+  "name": "latihan-node",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^26.0.0",
+    "tsx": "^4.20.0",
+    "typescript": "^6.0.0"
+  }
+}
+`),
+          h("2. tsconfig.json"),
+          p(
+            "<p>Konfigurasi ini memakai ESM modern, target ES2022, output ke <code>dist/</code>, dan mode strict.</p>",
+          ),
+          jsonCode(`
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "rootDir": "src",
+    "outDir": "dist",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "sourceMap": true
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
+}
+`),
+          h("3. Struktur Folder & File Pertama"),
+          bashCode(`
+latihan-node/
+├─ node_modules/
+├─ src/
+│  └─ hello.ts
+├─ package.json
+└─ tsconfig.json
+`),
+          tsCode(`
+// src/hello.ts
+const nama: string = "Budi";
+const versi: string = process.versions.node;
+
+console.log(\`Halo \${nama}, kamu memakai Node.js \${versi}\`);
+`),
+          h("4. Menjalankan"),
+          bashCode(`
+npx tsx src/hello.ts
+npm run typecheck
+`),
+          p(
+            "<p><code>tsx</code> menjalankan TypeScript langsung tanpa build. <code>tsc</code> dipakai untuk memeriksa tipe dan menghasilkan JavaScript di <code>dist/</code>.</p>",
+          ),
+          callout(
+            "warning",
+            "Jika muncul Cannot find module, jalankan npm install. Jika tsx tidak ditemukan, pastikan perintah dijalankan dari folder latihan-node dan dependency dev sudah terpasang.",
+          ),
+          callout(
+            "success",
+            "Tantangan Mandiri: Buat src/info.ts yang mencetak process.platform dan process.arch, lalu jalankan dengan npx tsx src/info.ts.",
+          ),
+          divider(),
+        ],
+      },
+      {
         title: "Apa Itu Node.js & Bagaimana Ia Bekerja",
         duration: 18,
         blocks: [
@@ -53,12 +157,11 @@ console.log(\`Halo \${nama}, kamu memakai Node.js \${versi}\`);
           ),
           h("Studi Kasus: Cek Runtime"),
           p(
-            "<p>Buat file <code>src/hello.ts</code> berisi kode di atas, lalu jalankan dengan <code>tsx</code> (kita akan memasang TypeScript di Part 3). Untuk sekarang, pastikan Node sudah terpasang:</p>",
+            "<p>Gunakan proyek <code>latihan-node</code> dari lesson Persiapan Praktik. Buat file <code>src/hello.ts</code> berisi kode di atas, lalu jalankan dengan <code>tsx</code>:</p>",
           ),
           bashCode(`
-node --version
-npm --version
 npx tsx src/hello.ts
+npm run typecheck
 `),
           callout(
             "success",
@@ -394,16 +497,15 @@ npx tsx src/index.ts
         blocks: [
           h("Tujuan Pembelajaran"),
           p(
-            "<p>Membuat proyek Node, memahami isi <code>package.json</code>, serta memakai <code>scripts</code> untuk menjalankan perintah proyek.</p>",
+            "<p>Memahami isi <code>package.json</code> proyek <code>latihan-node</code> serta memakai <code>scripts</code> untuk menjalankan perintah proyek.</p>",
           ),
-          h("1. Membuat Proyek"),
+          h("1. Proyek yang Sudah Disiapkan"),
           p(
-            "<p><code>npm init -y</code> membuat <code>package.json</code> dengan nilai awal. File ini adalah identitas dan konfigurasi proyek.</p>",
+            "<p>Di lesson Persiapan Praktik kita sudah menjalankan <code>npm init -y</code> dan memasang TypeScript. Sekarang fokusnya adalah memahami file <code>package.json</code> yang sudah ada di folder <code>latihan-node</code>.</p>",
           ),
           bashCode(`
-mkdir latihan-node
 cd latihan-node
-npm init -y
+npm run typecheck
 `),
           h("2. Field Penting"),
           p(
@@ -991,12 +1093,15 @@ console.log(harga);
         blocks: [
           h("Tujuan Pembelajaran"),
           p(
-            "<p>Menyiapkan proyek Node.js + TypeScript dari nol: instalasi, tsconfig, menjalankan development, dan build produksi.</p>",
+            "<p>Mendalami konfigurasi TypeScript di Node.js: <code>tsconfig</code>, menjalankan development, build produksi, dan alur verifikasi.</p>",
           ),
-          h("1. Instalasi"),
+          h("1. Dependency Sudah Terpasang"),
+          p(
+            "<p>TypeScript, <code>tsx</code>, dan <code>@types/node</code> sudah dipasang di lesson Persiapan Praktik. Kita hanya perlu memastikan semuanya tersedia di proyek <code>latihan-node</code>.</p>",
+          ),
           bashCode(`
-npm init -y
-npm install -D typescript tsx @types/node
+cd latihan-node
+npm ls typescript tsx @types/node
 `),
           h("2. tsconfig.json"),
           p(

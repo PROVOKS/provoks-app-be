@@ -28,6 +28,10 @@ export const REACT_PARTS_1_4: CoursePartDef[] = [
           p(
             "<p>Setelah mempelajari materi ini, kamu mampu menjelaskan peran React, membedakan pendekatan deklaratif dan imperatif, serta memecah UI menjadi komponen.</p>",
           ),
+          callout(
+            "info",
+            "Lesson ini bersifat konseptual. Contoh kode di bawah adalah ilustrasi dan belum tentu lengkap. Praktik serta pemasangan dependency dimulai di Lesson 2 “Menyiapkan Vite + React + TypeScript”. Pastikan Node.js 20 LTS atau lebih baru dan npm tersedia sebelum mengikuti praktik.",
+          ),
           h("1. React Adalah Library untuk UI"),
           p(
             "<p>React bukan framework penuh dan bukan bahasa baru. React adalah library JavaScript untuk membangun antarmuka berbasis <strong>komponen</strong>. Setiap komponen adalah fungsi yang menerima data (props) dan mengembalikan markup (JSX).</p><p>React mengurus proses memperbarui tampilan saat data berubah. Kamu cukup mendeskripsikan <em>tampilan untuk state tertentu</em>, bukan memanipulasi DOM satu per satu.</p>",
@@ -49,6 +53,8 @@ tombol?.addEventListener("click", () => {
 `),
           tsCode(`
 // Deklaratif: React menghitung tampilan dari state
+import { useState } from "react";
+
 function TombolHitung() {
   const [jumlah, setJumlah] = useState(0);
 
