@@ -40,6 +40,8 @@ export type CourseSeedDef = {
   defaultStatus?: "DRAFT" | "PUBLISHED";
   /// slug course prasyarat; course ini terkunci sampai prasyarat selesai 100%
   blockedBySlug?: string;
+  /// cocokkan lesson hanya lewat slug; aman saat menyisipkan lesson baru
+  matchBySlugOnly?: boolean;
   tags: { name: string; slug: string; category: string }[];
   parts: CoursePartDef[];
 };
@@ -214,9 +216,10 @@ export async function upsertCourseContent(def: CourseSeedDef) {
 
     for (const [lessonIndex, lesson] of partDef.lessons.entries()) {
       const lessonSlug = slugify(lesson.title);
-      const matchedSilabus =
-        existingSilabusList.find((es) => es.slug === lessonSlug) ??
-        existingSilabusList.find((es) => es.order === lessonIndex);
+      const matchedSilabus = def.matchBySlugOnly
+        ? existingSilabusList.find((es) => es.slug === lessonSlug)
+        : (existingSilabusList.find((es) => es.slug === lessonSlug) ??
+          existingSilabusList.find((es) => es.order === lessonIndex));
 
       const silabus = matchedSilabus
         ? await prisma.silabusPart.update({
