@@ -21,6 +21,7 @@
     "seed:js": "tsx prisma/seed-js-course.ts",
     "seed:node": "tsx prisma/seed-node-course.ts",
     "seed:react": "tsx prisma/seed-react-course.ts",
+    "seed:rest-api": "tsx prisma/seed-rest-api-course.ts",
     "prisma:studio": "prisma studio"
   },
   "keywords": [
