@@ -6,7 +6,7 @@
  */
 import { prisma } from "../src/db/prisma";
 import { upsertCourseContent } from "./content/helpers";
-import { REST_API_PARTS_1_2 } from "./content/rest-api/parts-1-2";
+import { REST_API_PARTS_1_2 } from "./content/web-development/rest-api/parts-1-2";
 
 async function main() {
   await upsertCourseContent({

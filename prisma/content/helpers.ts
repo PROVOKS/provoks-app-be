@@ -42,6 +42,10 @@ export type CourseSeedDef = {
   blockedBySlug?: string;
   /// cocokkan lesson hanya lewat slug; aman saat menyisipkan lesson baru
   matchBySlugOnly?: boolean;
+  /// slug path tujuan; default web-development atau path pertama
+  pathSlug?: string;
+  /// ubah status path tujuan menjadi PUBLISHED
+  publishPath?: boolean;
   tags: { name: string; slug: string; category: string }[];
   parts: CoursePartDef[];
 };
@@ -104,9 +108,21 @@ export async function upsertCourseContent(def: CourseSeedDef) {
     tagRecords.push(tag);
   }
 
-  const path =
-    (await prisma.path.findUnique({ where: { slug: "web-development" } })) ??
-    (await prisma.path.findFirst({ orderBy: { createdAt: "asc" } }));
+  const path = def.pathSlug
+    ? await prisma.path.findUnique({ where: { slug: def.pathSlug } })
+    : ((await prisma.path.findUnique({ where: { slug: "web-development" } })) ??
+      (await prisma.path.findFirst({ orderBy: { createdAt: "asc" } })));
+
+  if (def.pathSlug && !path) {
+    throw new Error(`Path "${def.pathSlug}" tidak ditemukan`);
+  }
+
+  if (path && def.publishPath && path.status !== "PUBLISHED") {
+    await prisma.path.update({
+      where: { id: path.id },
+      data: { status: "PUBLISHED" },
+    });
+  }
 
   const existingCourse = await prisma.course.findUnique({
     where: { slug: def.slug },

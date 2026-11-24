@@ -9,7 +9,7 @@ import {
   p,
   quiz,
   tsCode,
-} from "../helpers";
+} from "../../helpers";
 
 export const REST_API_PARTS_1_2: CoursePartDef[] = [
   // ==========================================================

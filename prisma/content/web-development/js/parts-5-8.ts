@@ -7,7 +7,7 @@ import {
   jsCode,
   p,
   quiz,
-} from "../helpers";
+} from "../../helpers";
 
 export const JS_PARTS_5_8: CoursePartDef[] = [
   // ==========================================================

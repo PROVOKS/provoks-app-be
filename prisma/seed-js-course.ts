@@ -5,8 +5,8 @@
  */
 import { prisma } from "../src/db/prisma";
 import { upsertCourseContent } from "./content/helpers";
-import { JS_PARTS_1_4 } from "./content/js/parts-1-4";
-import { JS_PARTS_5_8 } from "./content/js/parts-5-8";
+import { JS_PARTS_1_4 } from "./content/web-development/js/parts-1-4";
+import { JS_PARTS_5_8 } from "./content/web-development/js/parts-5-8";
 
 async function main() {
   await upsertCourseContent({

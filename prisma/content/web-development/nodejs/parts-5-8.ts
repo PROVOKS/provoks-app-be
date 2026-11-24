@@ -8,7 +8,7 @@ import {
   p,
   quiz,
   tsCode,
-} from "../helpers";
+} from "../../helpers";
 
 export const NODE_PARTS_5_8: CoursePartDef[] = [
   // ==========================================================
