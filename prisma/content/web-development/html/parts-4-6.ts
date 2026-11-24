@@ -6,7 +6,7 @@ import {
   htmlCode,
   p,
   quiz,
-} from "../helpers";
+} from "../../helpers";
 
 export const HTML_PARTS_4_6: CoursePartDef[] = [
   // ==========================================================

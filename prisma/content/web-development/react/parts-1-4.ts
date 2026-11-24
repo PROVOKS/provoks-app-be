@@ -9,7 +9,7 @@ import {
   p,
   quiz,
   tsCode,
-} from "../helpers";
+} from "../../helpers";
 
 export const REACT_PARTS_1_4: CoursePartDef[] = [
   // ==========================================================

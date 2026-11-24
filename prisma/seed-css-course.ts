@@ -5,8 +5,8 @@
  */
 import { prisma } from "../src/db/prisma";
 import { upsertCourseContent } from "./content/helpers";
-import { CSS_PARTS_1_3 } from "./content/css/parts-1-3";
-import { CSS_PARTS_4_6 } from "./content/css/parts-4-6";
+import { CSS_PARTS_1_3 } from "./content/web-development/css/parts-1-3";
+import { CSS_PARTS_4_6 } from "./content/web-development/css/parts-4-6";
 
 async function main() {
   await upsertCourseContent({
